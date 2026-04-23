@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Varma – Värmepump Stockholm | Service & installation av värmepumpar</title>
+<meta name="description" content="Certifierad installation, service och reparation av värmepumpar i Stockholm. Spara upp till 70% på uppvärmning. 10 års garanti. Boka hembesök online." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1B2C;
+  --ink-soft:#2C3E55;
+  --muted:#5A6B80;
+  --line:#E6E2DB;
+  --cream:#F7F4EE;
+  --cream-2:#FBF9F5;
+  --paper:#FFFFFF;
+  --blue:#1E5BC6;
+  --blue-dark:#154099;
+  --blue-soft:#E8F0FC;
+  --warm:#D98A3C;
+  --wood:#C98E5B;
+  --shadow:0 10px 40px -12px rgba(14,27,44,.12);
+  --radius:14px;
+  --radius-lg:22px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  font-size:16px;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:500;letter-spacing:-.02em;color:var(--ink);margin:0}
+h1{font-size:clamp(38px,5.2vw,68px);line-height:1.05;font-weight:500}
+h2{font-size:clamp(30px,3.6vw,46px);line-height:1.1;font-weight:500}
+h3{font-size:22px;line-height:1.25;font-weight:500}
+p{margin:0;color:var(--ink-soft)}
+.eyebrow{
+  font-family:'Inter',sans-serif;
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--blue);font-weight:600;margin-bottom:12px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 22px;border-radius:999px;
+  font-weight:500;font-size:15px;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  border:1px solid transparent;white-space:nowrap;cursor:pointer;
+}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 10px 24px -10px rgba(30,91,198,.55)}
+.btn-ghost{background:transparent;border-color:var(--ink);color:var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:#fff}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--ink)}
+.arr{width:14px;height:14px;display:inline-block}
+
+/* ==== ANNOUNCE ==== */
+.announce{
+  background:var(--ink);color:#F0E9DC;
+  font-size:13px;text-align:center;padding:10px 20px;letter-spacing:.01em;
+}
+.announce strong{color:#fff}
+.announce .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#A9D7A8;margin:0 10px;vertical-align:middle}
+
+/* ==== NAV ==== */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.92);backdrop-filter:saturate(1.4) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{display:flex;align-items:center;gap:28px;padding:12px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em}
+.brand-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue) 0%,#2C74E8 60%,#5FA0FF 100%);
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+}
+.brand-name{font-size:22px;font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.02em}
+.nav-links{display:flex;align-items:center;gap:26px;margin-left:20px}
+.nav-links a{font-size:15px;color:var(--ink-soft);position:relative}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.has-caret::after{content:"";display:inline-block;margin-left:6px;border:4px solid transparent;border-top-color:var(--muted);transform:translateY(2px)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.phone-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;color:var(--ink);padding:8px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--cream-2);
+}
+.phone-pill .ic{width:14px;height:14px;color:var(--blue)}
+
+/* ==== HERO ==== */
+.hero{position:relative;isolation:isolate;overflow:hidden;background:var(--cream-2)}
+.hero-grid{
+  display:grid;grid-template-columns:1.05fr .95fr;gap:56px;
+  padding:72px 0 92px;align-items:center;
+}
+.hero-copy .badges{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;padding:7px 12px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);color:var(--ink-soft);
+  box-shadow:0 1px 0 rgba(14,27,44,.03);
+}
+.badge .star{color:#E8B04E}
+.badge b{color:var(--ink);font-weight:600}
+.hero h1 .accent{
+  background:linear-gradient(90deg,var(--blue) 0%,#2C74E8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{font-size:19px;color:var(--ink-soft);margin:22px 0 32px;max-width:540px;line-height:1.55}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:38px}
+.hero-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding-top:28px;border-top:1px solid var(--line)}
+.hero-trust .t{display:flex;flex-direction:column;gap:4px}
+.hero-trust .t .k{font-size:13px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.hero-trust .t .v{font-size:15px;color:var(--ink);font-weight:500;display:flex;align-items:center;gap:8px}
+.hero-trust .t .v svg{color:var(--blue);width:16px;height:16px;flex-shrink:0}
+
+.hero-media{position:relative}
+.hero-img-wrap{
+  position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:0 30px 60px -30px rgba(14,27,44,.35);
+  aspect-ratio:1/1;background:#E9DECE;
+}
+.hero-img-wrap img{width:100%;height:100%;object-fit:cover}
+.hero-chip{
+  position:absolute;left:-18px;bottom:28px;background:#fff;
+  padding:14px 18px;border-radius:14px;border:1px solid var(--line);
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;max-width:260px;
+}
+.hero-chip .ring{
+  width:46px;height:46px;border-radius:50%;
+  background:conic-gradient(var(--blue) 0 82%,#E4EAF2 0);
+  display:grid;place-items:center;flex-shrink:0;
+}
+.hero-chip .ring i{width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-style:normal;font-weight:600;color:var(--blue);font-size:12px}
+.hero-chip .c-k{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.hero-chip .c-v{font-weight:600;color:var(--ink);font-size:14px;line-height:1.3}
+.hero-chip.top{left:auto;right:-18px;bottom:auto;top:36px}
+
+/* ==== SERVICES ==== */
+.section{padding:96px 0}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;margin-bottom:42px;flex-wrap:wrap}
+.section-head .lead{max-width:580px}
+.section-head .lead p{margin-top:14px;font-size:17px}
+.section-head .side-link{font-size:15px;color:var(--blue);font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.grid-6{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.service{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:28px;display:flex;flex-direction:column;gap:14px;
+  transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.service:hover{transform:translateY(-4px);border-color:#D7D1C6;box-shadow:var(--shadow)}
+.service .ic{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--blue-soft);display:grid;place-items:center;color:var(--blue);
+}
+.service .ic svg{width:26px;height:26px}
+.service h3{font-size:22px;font-family:'Fraunces',serif;font-weight:500}
+.service p{font-size:14.5px;color:var(--muted);line-height:1.55}
+.service .foot{margin-top:auto;padding-top:20px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.service .foot b{font-weight:600;color:var(--ink)}
+.service .foot span{color:var(--muted)}
+.service .foot a{color:var(--blue);font-weight:500}
+
+/* ==== ABOUT / BRAND ==== */
+.about{background:var(--cream)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.about-media{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/5;background:#E9DECE}
+.about-media img{width:100%;height:100%;object-fit:cover}
+.about-badge{
+  position:absolute;left:22px;top:22px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);
+  padding:14px 18px;border-radius:14px;box-shadow:var(--shadow);
+}
+.about-badge .big{font-size:28px;font-family:'Fraunces',serif;font-weight:600;line-height:1}
+.about-badge .small{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.about-copy h2{margin-bottom:22px}
+.about-copy p{font-size:17px;margin-bottom:14px;color:var(--ink-soft)}
+.check-list{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:26px}
+.check-list li{list-style:none;display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink-soft)}
+.check-list svg{width:18px;height:18px;color:var(--blue);flex-shrink:0}
+
+/* ==== PROCESS ==== */
+.process{background:#fff;position:relative}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px;position:relative}
+.steps::before{
+  content:"";position:absolute;top:34px;left:5%;right:5%;height:1px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 16px);
+  z-index:0;
+}
+.step{position:relative;z-index:1;text-align:left}
+.step .num{
+  width:68px;height:68px;border-radius:50%;
+  background:#fff;border:1px solid var(--line);
+  display:grid;place-items:center;margin-bottom:18px;
+  font-family:'Fraunces',serif;font-size:26px;color:var(--blue);font-weight:600;
+  box-shadow:0 4px 14px -6px rgba(14,27,44,.15);
+}
+.step h4{font-family:'Fraunces',serif;font-size:20px;font-weight:500;margin-bottom:8px}
+.step p{font-size:14px;color:var(--muted)}
+
+/* ==== FEATURED PRODUCT ==== */
+.featured{background:var(--cream-2)}
+.featured-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.featured-img{
+  position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:1;
+  background:linear-gradient(145deg,#F5ECDF 0%,#E8DCC6 100%);
+}
+.featured-img img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+.featured h2{margin-bottom:20px}
+.featured .sub{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:12px}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin:26px 0}
+.spec li{list-style:none;display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink-soft)}
+.spec svg{color:var(--blue);width:18px;height:18px;flex-shrink:0}
+
+/* ==== CALCULATOR ==== */
+.calc{background:var(--ink);color:#F4ECDB;position:relative;overflow:hidden}
+.calc::before{
+  content:"";position:absolute;right:-20%;top:-20%;width:60%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 40% 40%,rgba(30,91,198,.3),transparent 60%);
+}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative;z-index:1}
+.calc h2{color:#fff;margin-bottom:18px}
+.calc .lead p{color:#C6BEA8;font-size:17px}
+.calc .eyebrow{color:#E8B04E}
+.calc-card{
+  background:#12263E;border:1px solid #22344C;border-radius:var(--radius-lg);
+  padding:30px;box-shadow:0 20px 60px -20px rgba(0,0,0,.5);
+}
+.calc-field{margin-bottom:22px}
+.calc-field label{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8FA3BF;margin-bottom:10px}
+.calc-range{width:100%;-webkit-appearance:none;height:4px;border-radius:999px;background:linear-gradient(90deg,var(--blue) 0 60%,#2B3E58 60%);outline:none}
+.calc-range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.3);cursor:pointer;border:3px solid var(--blue)}
+.calc-chips{display:flex;flex-wrap:wrap;gap:8px}
+.calc-chip{padding:9px 16px;border-radius:999px;border:1px solid #2B3E58;background:#0F1E33;color:#C6BEA8;font-size:14px;cursor:pointer}
+.calc-chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.calc-out{
+  margin-top:28px;padding-top:22px;border-top:1px solid #22344C;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;
+}
+.calc-out .kpi .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8FA3BF;margin-bottom:6px}
+.calc-out .kpi .v{font-size:36px;font-family:'Fraunces',serif;color:#fff;font-weight:500;line-height:1}
+.calc-out .kpi .u{font-size:13px;color:#8FA3BF;margin-top:4px}
+
+/* ==== BOOKING ==== */
+.booking{background:var(--paper)}
+.booking-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+.cal-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow)}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.cal-head h4{font-family:'Fraunces',serif;font-size:20px;font-weight:500}
+.cal-nav{display:flex;gap:8px}
+.cal-nav button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink-soft)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px}
+.cal-dow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 0}
+.cal-day{
+  aspect-ratio:1;display:grid;place-items:center;border-radius:10px;
+  font-size:14px;color:var(--ink-soft);cursor:pointer;border:1px solid transparent;
+}
+.cal-day:hover{border-color:var(--line)}
+.cal-day.muted{color:#C6C0B4}
+.cal-day.active{background:var(--blue);color:#fff;font-weight:600}
+.cal-day.avail::after{content:"";width:4px;height:4px;border-radius:50%;background:var(--blue);margin-top:3px;display:none}
+.cal-day.avail{position:relative}
+.cal-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.slot{padding:10px;border-radius:10px;border:1px solid var(--line);text-align:center;font-size:13px;color:var(--ink-soft);cursor:pointer}
+.slot.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.slot:hover{border-color:var(--ink-soft)}
+.booking-right p{font-size:17px;margin-bottom:26px}
+.contact-rows{margin-top:24px}
+.c-row{display:flex;gap:14px;padding:16px 0;border-top:1px solid var(--line)}
+.c-row:last-child{border-bottom:1px solid var(--line)}
+.c-row .ic{width:40px;height:40px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;flex-shrink:0}
+.c-row .t{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.c-row .v{font-size:15px;color:var(--ink);font-weight:500}
+
+/* ==== TESTIMONIALS ==== */
+.testi{background:var(--cream)}
+.testi-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;margin-bottom:40px}
+.rating-block{display:flex;align-items:center;gap:18px}
+.rating-score{font-family:'Fraunces',serif;font-size:54px;line-height:1;color:var(--ink);font-weight:500}
+.stars{color:#E8B04E;font-size:18px;letter-spacing:4px}
+.rating-meta{font-size:14px;color:var(--muted)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.t-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:28px;display:flex;flex-direction:column;gap:14px;
+}
+.t-card .stars{margin-bottom:8px}
+.t-card p{font-size:15.5px;color:var(--ink-soft);line-height:1.6;font-family:'Fraunces',serif;font-style:italic;font-weight:400}
+.t-author{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:16px;border-top:1px solid var(--line)}
+.avatar{width:42px;height:42px;border-radius:50%;background:#E4DBC9;display:grid;place-items:center;font-weight:600;color:var(--ink);font-size:14px}
+.t-author .name{font-weight:500;font-size:15px}
+.t-author .meta{font-size:12.5px;color:var(--muted)}
+
+/* ==== SHOP TEASER ==== */
+.shop{background:#fff}
+.shop-head{text-align:center;max-width:640px;margin:0 auto 40px}
+.shop-head p{margin-top:16px;font-size:17px}
+.shop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.prod{
+  background:var(--cream-2);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:20px;display:flex;flex-direction:column;gap:12px;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.prod:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.prod .ph{aspect-ratio:1;border-radius:12px;background:linear-gradient(145deg,#F0E6D5,#E3D5BB);display:grid;place-items:center}
+.prod .ph svg{width:56%;height:56%;color:#A9906D;opacity:.7}
+.prod .tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:600}
+.prod h4{font-family:'Fraunces',serif;font-size:18px;font-weight:500}
+.prod .price{display:flex;align-items:baseline;gap:8px;margin-top:auto}
+.prod .price .p{font-size:20px;font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
+.prod .price .was{font-size:13px;color:var(--muted);text-decoration:line-through}
+.prod .buy{margin-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.prod .buy a{color:var(--blue);font-weight:500}
+
+/* ==== COVERAGE ==== */
+.coverage{background:var(--cream-2)}
+.coverage h2{margin-bottom:18px}
+.coverage p{max-width:720px;font-size:17px;margin-bottom:28px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;background:#fff;border:1px solid var(--line);border-radius:999px;
+  font-size:14px;color:var(--ink-soft);transition:all .15s ease;cursor:pointer;
+}
+.chip:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.chip svg{width:12px;height:12px;opacity:.5}
+
+/* ==== FAQ ==== */
+.faq{background:#fff}
+.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px}
+.faq-grid h2{margin-bottom:14px}
+.faq-grid .lead p{font-size:16px}
+.faq-list{display:flex;flex-direction:column;gap:12px}
+.q{
+  background:var(--cream-2);border:1px solid var(--line);border-radius:14px;
+  padding:20px 24px;cursor:pointer;
+}
+.q summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;font-weight:500;font-size:16px;color:var(--ink)}
+.q summary::-webkit-details-marker{display:none}
+.q .plus{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;flex-shrink:0;color:var(--blue);transition:transform .2s}
+.q[open] .plus{transform:rotate(45deg);background:var(--blue);color:#fff;border-color:var(--blue)}
+.q p{margin-top:12px;font-size:15px;color:var(--ink-soft);line-height:1.6}
+
+/* ==== CTA BANNER ==== */
+.cta-banner{
+  background:linear-gradient(135deg,var(--blue) 0%,#2C74E8 100%);
+  color:#fff;border-radius:var(--radius-lg);
+  padding:56px;display:flex;align-items:center;justify-content:space-between;gap:40px;
+  margin:0 auto;max-width:1144px;
+  box-shadow:0 30px 60px -20px rgba(30,91,198,.45);
+}
+.cta-banner h2{color:#fff;max-width:520px}
+.cta-banner p{color:#D8E5FC;margin-top:12px;max-width:500px}
+.cta-banner .btns{display:flex;flex-wrap:wrap;gap:12px}
+.cta-banner .btn-primary{background:#fff;color:var(--blue)}
+.cta-banner .btn-primary:hover{background:#F4ECDB}
+.cta-banner .btn-ghost{border-color:rgba(255,255,255,.5);color:#fff}
+.cta-banner .btn-ghost:hover{background:#fff;color:var(--blue)}
+
+/* ==== FOOTER ==== */
+footer{background:var(--ink);color:#A9B4C4;padding:72px 0 28px}
+.foot-grid{display:grid;grid-template-columns:1.3fr repeat(3,1fr);gap:48px;margin-bottom:48px}
+.foot-brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.foot-brand .brand-name{color:#fff}
+.foot p{color:#8A96A8;font-size:14px;line-height:1.6}
+.foot h5{color:#fff;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 16px}
+.foot ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.foot ul a{color:#A9B4C4;font-size:14px}
+.foot ul a:hover{color:#fff}
+.foot-bottom{border-top:1px solid #22344C;padding-top:22px;display:flex;justify-content:space-between;gap:20px;font-size:13px;color:#7B8699;flex-wrap:wrap}
+
+/* ==== AI CHAT BUBBLE ==== */
+.chat-bubble{
+  position:fixed;bottom:24px;right:24px;z-index:100;
+  background:var(--blue);color:#fff;border-radius:999px;padding:14px 22px;
+  box-shadow:0 20px 40px -10px rgba(30,91,198,.55);
+  display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;cursor:pointer;
+}
+.chat-bubble .pulse{width:8px;height:8px;border-radius:50%;background:#A9D7A8;box-shadow:0 0 0 0 rgba(169,215,168,.7);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(169,215,168,.7)}70%{box-shadow:0 0 0 10px rgba(169,215,168,0)}100%{box-shadow:0 0 0 0 rgba(169,215,168,0)}}
+
+/* ==== RESPONSIVE ==== */
+@media (max-width:1080px){
+  .grid-6{grid-template-columns:repeat(2,1fr)}
+  .shop-grid{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(5,1fr)}
+}
+@media (max-width:880px){
+  .section{padding:72px 0}
+  .hero-grid,.about-grid,.featured-grid,.calc-grid,.booking-grid,.faq-grid{grid-template-columns:1fr;gap:42px}
+  .hero-trust{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .steps::before{display:none}
+  .testi-grid{grid-template-columns:1fr}
+  .cta-banner{flex-direction:column;align-items:flex-start;padding:36px}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media (max-width:520px){
+  .shop-grid{grid-template-columns:1fr}
+  .grid-6{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  .hero-grid{padding:48px 0 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCE -->
+<div class="announce">
+  <span class="dot"></span>
+  Vår-kampanj: <strong>Räntefri avbetalning i 24 månader</strong> på alla installationer under april
+  <span class="dot"></span>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#">
+      <img src="varma-logo.png" alt="Varma" style="height:64px;width:auto;display:block" />
+    </a>
+    <div class="nav-links">
+      <a href="#" class="has-caret">Värmepumpar</a>
+      <a href="#" class="has-caret">Tjänster</a>
+      <a href="#shop">Butik</a>
+      <a href="#calc">Besparing</a>
+      <a href="#areas">Områden</a>
+      <a href="#">Om oss</a>
+    </div>
+    <div class="nav-right">
+      <span class="phone-pill">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        020 – 89 91 19
+      </span>
+      <a href="#booking" class="btn btn-primary">Boka hembesök</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="badges">
+        <span class="badge"><span class="star">★</span> <b>4,9</b> på Google</span>
+        <span class="badge">🏆 Topp-10 på Reco 2026</span>
+        <span class="badge">✓ Auktoriserad Toshiba-partner</span>
+      </div>
+      <h1>Värmepump Stockholm<br><span class="accent">– spara upp till 70%</span></h1>
+      <p class="hero-sub">Vi optimerar ditt klimat med marknadens bästa värmepumpar. Komplett installation och service med 10 års garanti – av certifierade tekniker i hela Stockholms län.</p>
+      <div class="hero-ctas">
+        <a href="#booking" class="btn btn-primary">Boka hembesök <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        <a href="#calc" class="btn btn-ghost">Räkna ut din besparing</a>
+        <a href="#" class="btn btn-light">Hitta rätt lösning</a>
+      </div>
+      <div class="hero-trust">
+        <div class="t"><span class="k">Garanti</span><span class="v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>10 års installation</span></div>
+        <div class="t"><span class="k">Tekniker</span><span class="v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Certifierade F-gas</span></div>
+        <div class="t"><span class="k">Finansiering</span><span class="v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Räntefritt 24 mån</span></div>
+        <div class="t"><span class="k">Leverans</span><span class="v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Snabb installation</span></div>
+      </div>
+    </div>
+    <div class="hero-media">
+      <div class="hero-img-wrap">
+        <img src="hero-bedroom.jpg" alt="Scandinavian bedroom with Toshiba Haori heat pump" />
+      </div>
+      <div class="hero-chip top">
+        <div class="ring"><i>85%</i></div>
+        <div>
+          <div class="c-k">Energibesparing</div>
+          <div class="c-v">Upp till 85% lägre<br>värmekostnad</div>
+        </div>
+      </div>
+      <div class="hero-chip">
+        <div class="ring" style="background:conic-gradient(#E8B04E 0 98%,#E4EAF2 0)"><i style="color:#E8B04E">4.9</i></div>
+        <div>
+          <div class="c-k">52 Google-omdömen</div>
+          <div class="c-v">"Snabb, trevlig och<br>kunnig service"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="lead">
+        <div class="eyebrow">Vårt erbjudande</div>
+        <h2>Värmepump, bergvärme &amp; luftkonditionering</h2>
+        <p>Vi hjälper dig hitta den mest energieffektiva lösningen för din fastighet – oavsett om det gäller värme, kyla eller elbilsladdning.</p>
+      </div>
+      <a href="#" class="side-link">Se alla tjänster →</a>
+    </div>
+    <div class="grid-6">
+
+      <div class="service">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/><circle cx="7" cy="6" r="1" fill="currentColor"/><circle cx="13" cy="12" r="1" fill="currentColor"/><circle cx="17" cy="18" r="1" fill="currentColor"/></svg></div>
+        <h3>Luft-luft</h3>
+        <p>Kostnadseffektiv värme och kyla. Renar luften och ger behagligt klimat året runt.</p>
+        <div class="foot"><span>Investering</span><b>från 15 000 kr</b></div>
+      </div>
+
+      <div class="service">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/><path d="M12 3v18"/></svg></div>
+        <h3>Luftkonditionering</h3>
+        <p>Svalt, skönt och filtrerat från pollen under sommarhalvåret. Perfekt för varma dagar.</p>
+        <div class="foot"><span>Investering</span><b>från 15 000 kr</b></div>
+      </div>
+
+      <div class="service">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07 19.07 4.93"/></svg></div>
+        <h3>Luft-vatten</h3>
+        <p>För hus med vattenburen värme. Effektiv uppvärmning av både hus och tappvatten.</p>
+        <div class="foot"><span>Investering</span><b>från 100 000 kr</b></div>
+      </div>
+
+      <div class="service">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M4 22V10l8-6 8 6v12"/><path d="M10 22v-6h4v6"/></svg></div>
+        <h3>Bergvärme</h3>
+        <p>Stabil och trygg värme från berggrunden. Maximal besparing och lång livslängd.</p>
+        <div class="foot"><span>Investering</span><b>från 130 000 kr</b></div>
+      </div>
+
+      <div class="service">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M10 7h4M10 11h4M10 15h4"/></svg></div>
+        <h3>Värmepumpsberedare</h3>
+        <p>Värmer ditt tappvatten miljövänligt med upp till 80% besparing.</p>
+        <div class="foot"><span>Investering</span><b>från 50 000 kr</b></div>
+      </div>
+
+      <div class="service">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m8 14 3-3 3 3 5-5"/></svg></div>
+        <h3>Frånluft</h3>
+        <p>Återvinn energin i ventilationsluften. Smart lösning för nyare hus.</p>
+        <div class="foot"><span>Investering</span><b>från 100 000 kr</b></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section about">
+  <div class="wrap about-grid">
+    <div class="about-media">
+      <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1000&q=80" alt="Varma tekniker vid installation" />
+      <div class="about-badge">
+        <div class="big">20+ år</div>
+        <div class="small">I branschen</div>
+      </div>
+    </div>
+    <div class="about-copy">
+      <div class="eyebrow">Om oss</div>
+      <h2>Proffs på värmepumpar &amp; förnybar energi</h2>
+      <p>Vi säljer, installerar och utför byten samt service på lösningar från ledande tillverkare. Vårt team har tusentals framgångsrika installationer i bagaget och tar helhetsansvar för varje projekt.</p>
+      <p>Du som kund ska känna dig trygg och inte behöva involvera flera företag. Vårt fokus är effektivitet i kombination med hög kvalitet i varje steg.</p>
+      <ul class="check-list">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Certifierade tekniker</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Ledande varumärken</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 10 års garanti</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Helhetsansvar</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Snabba leveranser</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Personlig service</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section process">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="lead">
+        <div class="eyebrow">Hur det går till</div>
+        <h2>Så installerar vi din värmepump</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h4>Kontakt</h4><p>Vi går igenom dina behov och önskemål.</p></div>
+      <div class="step"><div class="num">2</div><h4>Hembesök</h4><p>Vi hittar optimal lösning på plats.</p></div>
+      <div class="step"><div class="num">3</div><h4>Offert</h4><p>Fast pris och tydliga villkor – inga överraskningar.</p></div>
+      <div class="step"><div class="num">4</div><h4>Installation</h4><p>Certifierade montörer gör jobbet snabbt och rent.</p></div>
+      <div class="step"><div class="num">5</div><h4>Trygghet</h4><p>Genomgång och valfritt serviceavtal.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="section featured">
+  <div class="wrap featured-grid">
+    <div class="featured-img">
+      <img src="https://images.unsplash.com/photo-1617104678098-de229db51175?auto=format&fit=crop&w=900&q=80" alt="Toshiba Haori värmepump" />
+    </div>
+    <div>
+      <div class="sub">Populäraste modellen</div>
+      <h2>Toshiba Haori</h2>
+      <p>Sveriges mest eftertraktade luftvärmepump kombinerar enastående prestanda med en unik textilfront i valfri färg. Passar perfekt in i vilken inredning som helst.</p>
+      <ul class="spec">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Utbytbar textilfront i 6 färger</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> A+++ energiklass</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Värmer och kyler</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Endast 19 dB(A)</li>
+      </ul>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#" class="btn btn-primary">Läs mer om Haori</a>
+        <a href="#" class="btn btn-ghost">Jämför modeller</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="section calc" id="calc">
+  <div class="wrap calc-grid">
+    <div class="lead">
+      <div class="eyebrow">Besparingskalkylator</div>
+      <h2>Räkna ut din besparing</h2>
+      <p>Se hur mycket du kan spara per år med en ny värmepump jämfört med ditt nuvarande värmesystem. Justera värdena till höger och få en uppskattning direkt.</p>
+      <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#booking" class="btn btn-primary">Boka kostnadsfri offert</a>
+      </div>
+    </div>
+    <div class="calc-card">
+      <div class="calc-field">
+        <label>Boyta: <span style="color:#fff">120 m²</span></label>
+        <input type="range" class="calc-range" min="50" max="400" value="120">
+      </div>
+      <div class="calc-field">
+        <label>Värmepumpstyp</label>
+        <div class="calc-chips">
+          <span class="calc-chip active">Luft-luft</span>
+          <span class="calc-chip">Luft-vatten</span>
+          <span class="calc-chip">Bergvärme</span>
+          <span class="calc-chip">Frånluft</span>
+        </div>
+      </div>
+      <div class="calc-field">
+        <label>Befintligt system</label>
+        <div class="calc-chips">
+          <span class="calc-chip">Direktel</span>
+          <span class="calc-chip active">Äldre pump</span>
+          <span class="calc-chip">Oljepanna</span>
+          <span class="calc-chip">Fjärrvärme</span>
+        </div>
+      </div>
+      <div class="calc-out">
+        <div class="kpi">
+          <div class="k">Din årliga besparing</div>
+          <div class="v">18 420 kr</div>
+          <div class="u">motsv. 62% lägre kostnad</div>
+        </div>
+        <div class="kpi" style="text-align:right">
+          <div class="k">Återbetalningstid</div>
+          <div class="v">5,2 år</div>
+          <div class="u">baserat på el-pris</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section class="section booking" id="booking">
+  <div class="wrap booking-grid">
+    <div class="cal-card">
+      <div class="cal-head">
+        <h4>Välj tid för hembesök</h4>
+        <div class="cal-nav">
+          <button>‹</button>
+          <button>›</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--ink-soft);font-size:14px">
+        <span>April 2026</span>
+        <span style="color:var(--muted);font-size:13px">Synkad med Outlook</span>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-dow">Mån</div><div class="cal-dow">Tis</div><div class="cal-dow">Ons</div><div class="cal-dow">Tor</div><div class="cal-dow">Fre</div><div class="cal-dow">Lör</div><div class="cal-dow">Sön</div>
+        <div class="cal-day muted">31</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day muted">5</div><div class="cal-day muted">6</div>
+        <div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day muted">12</div><div class="cal-day muted">13</div>
+        <div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day muted">19</div><div class="cal-day muted">20</div>
+        <div class="cal-day active">21</div><div class="cal-day avail">22</div><div class="cal-day avail">23</div><div class="cal-day avail">24</div><div class="cal-day avail">25</div><div class="cal-day muted">26</div><div class="cal-day muted">27</div>
+        <div class="cal-day avail">28</div><div class="cal-day avail">29</div><div class="cal-day avail">30</div><div class="cal-day muted">1</div><div class="cal-day muted">2</div><div class="cal-day muted">3</div><div class="cal-day muted">4</div>
+      </div>
+      <div style="border-top:1px solid var(--line);padding-top:16px;margin-top:6px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Lediga tider · Måndag 21 april</div>
+        <div class="cal-slots">
+          <div class="slot">09:00</div>
+          <div class="slot active">10:30</div>
+          <div class="slot">13:00</div>
+          <div class="slot">14:30</div>
+          <div class="slot">16:00</div>
+          <div class="slot">17:30</div>
+        </div>
+      </div>
+      <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px">Bekräfta – Måndag 21 april, 10:30</a>
+    </div>
+    <div class="booking-right">
+      <div class="eyebrow">Kontakta oss</div>
+      <h2>Redo att sänka dina värmekostnader?</h2>
+      <p>Boka ett kostnadsfritt hembesök online – kalendern synkas i realtid med vårt team i Outlook. Vi återkommer oftast inom 24 timmar.</p>
+      <div class="contact-rows">
+        <div class="c-row">
+          <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="t">Adress</div><div class="v">Esplanaden 13, Sundbyberg · Sjöflygvägen 35, Täby</div></div>
+        </div>
+        <div class="c-row">
+          <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+          <div><div class="t">Telefon</div><div class="v">020 – 89 91 19</div></div>
+        </div>
+        <div class="c-row">
+          <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div><div class="t">E-post</div><div class="v">hej@varma.se</div></div>
+        </div>
+        <div class="c-row">
+          <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="t">Öppettider</div><div class="v">Mån–Fre 07:30–17:00 · Jour dygnet runt</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testi">
+  <div class="wrap">
+    <div class="testi-top">
+      <div>
+        <div class="eyebrow">Kundomdömen</div>
+        <h2>Vad våra kunder säger</h2>
+      </div>
+      <div class="rating-block">
+        <div class="rating-score">4,9</div>
+        <div>
+          <div class="stars">★★★★★</div>
+          <div class="rating-meta">Baserat på 52 Google-omdömen</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-grid">
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Trevlig och snabb service! Bokade tid och fick tid inom en vecka, åtgärdade felet samt utförde enkel service på vår luftvärmepump. Rekommenderas varmt!"</p>
+        <div class="t-author">
+          <div class="avatar">MG</div>
+          <div><div class="name">Marre Gäderblom</div><div class="meta">Google · för 11 dagar sedan</div></div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"När jag skulle köpa och låta installera värmepump fick jag ett mycket bra bemötande. Johan var snabb, punktlig och kunnig. Från signerad offert till installation tog det tre dagar."</p>
+        <div class="t-author">
+          <div class="avatar">LG</div>
+          <div><div class="name">Lotta G.</div><div class="meta">Google · Stockholm</div></div>
+        </div>
+      </div>
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Jättetrevlig och kunnig kille som servade vår 30 år gamla bergvärmepanna som andra 'specialister' inte ville ta i. Kan varmt rekommendera denna firma."</p>
+        <div class="t-author">
+          <div class="avatar">MvH</div>
+          <div><div class="name">Marcus von Häger</div><div class="meta">Google · Täby</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOP TEASER -->
+<section class="section shop" id="shop">
+  <div class="wrap">
+    <div class="shop-head">
+      <div class="eyebrow">Butik</div>
+      <h2>Filter, reservdelar &amp; tillbehör</h2>
+      <p>60+ produkter på lager – fri frakt inom Stockholm på beställningar över 1 500 kr. Fler produkter på väg från våra partners Toshiba, Daikin och Mitsubishi.</p>
+    </div>
+    <div class="shop-grid">
+      <div class="prod">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M7 13h2M7 16h5"/></svg></div>
+        <div class="tag">Filter</div>
+        <h4>HEPA-filter Toshiba RAS</h4>
+        <div class="price"><span class="p">349 kr</span><span class="was">449 kr</span></div>
+        <div class="buy"><span>I lager</span><a href="#">Köp →</a></div>
+      </div>
+      <div class="prod">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></div>
+        <div class="tag">Fjärrkontroll</div>
+        <h4>Universal WiFi-modul</h4>
+        <div class="price"><span class="p">1 290 kr</span></div>
+        <div class="buy"><span>I lager</span><a href="#">Köp →</a></div>
+      </div>
+      <div class="prod">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20"/></svg></div>
+        <div class="tag">Service</div>
+        <h4>Årligt serviceavtal</h4>
+        <div class="price"><span class="p">1 995 kr</span><span class="was">2 495 kr</span></div>
+        <div class="buy"><span>Bokas online</span><a href="#">Välj →</a></div>
+      </div>
+      <div class="prod">
+        <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg></div>
+        <div class="tag">Tillbehör</div>
+        <h4>Utomhusställ stål</h4>
+        <div class="price"><span class="p">890 kr</span></div>
+        <div class="buy"><span>2–3 dagar</span><a href="#">Köp →</a></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:36px">
+      <a href="#" class="btn btn-ghost">Se alla 60+ produkter →</a>
+    </div>
+  </div>
+</section>
+
+<!-- COVERAGE -->
+<section class="section coverage" id="areas">
+  <div class="wrap">
+    <div class="eyebrow">Täckningsområde</div>
+    <h2>Vi täcker hela Stockholms län</h2>
+    <p>Letar du efter pålitlig installation av luftvärmepump i Stockholms län? Vi erbjuder professionella tjänster i hela regionen – klicka på din kommun för lokal information, priser och referenser.</p>
+    <div class="chips">
+      <a class="chip" href="#">Stockholm</a>
+      <a class="chip" href="#">Solna</a>
+      <a class="chip" href="#">Sundbyberg</a>
+      <a class="chip" href="#">Huddinge</a>
+      <a class="chip" href="#">Nacka</a>
+      <a class="chip" href="#">Täby</a>
+      <a class="chip" href="#">Sollentuna</a>
+      <a class="chip" href="#">Järfälla</a>
+      <a class="chip" href="#">Botkyrka</a>
+      <a class="chip" href="#">Tyresö</a>
+      <a class="chip" href="#">Österåker</a>
+      <a class="chip" href="#">Ekerö</a>
+      <a class="chip" href="#">Upplands Väsby</a>
+      <a class="chip" href="#">Värmdö</a>
+      <a class="chip" href="#">Lidingö</a>
+      <a class="chip" href="#">Vallentuna</a>
+      <a class="chip" href="#">Vaxholm</a>
+      <a class="chip" href="#">Danderyd</a>
+      <a class="chip" href="#">Sigtuna</a>
+      <a class="chip" href="#">Upplands-Bro</a>
+      <a class="chip" href="#">Norrtälje</a>
+      <a class="chip" href="#">Haninge</a>
+      <a class="chip" href="#">Salem</a>
+      <a class="chip" href="#">Södertälje</a>
+      <a class="chip" href="#">Nykvarn</a>
+      <a class="chip" href="#">Nynäshamn</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section faq">
+  <div class="wrap faq-grid">
+    <div class="lead">
+      <div class="eyebrow">Vanliga frågor</div>
+      <h2>Allt du behöver veta</h2>
+      <p>Hittar du inte svaret? Ring oss på <strong>020 – 89 91 19</strong> eller skicka en fråga till vår AI-assistent nere till höger – hon svarar dygnet runt.</p>
+    </div>
+    <div class="faq-list">
+      <details class="q" open>
+        <summary>Hur mycket kan jag spara på en värmepump?<span class="plus">+</span></summary>
+        <p>En modern luft-luftvärmepump sänker typiskt din värmekostnad med 50–70% jämfört med direktverkande el. Bergvärme kan spara upp till 85% över året. Använd vår kalkylator ovan för en exakt uppskattning baserad på din bostad.</p>
+      </details>
+      <details class="q">
+        <summary>Vad ingår i 10 års garanti?<span class="plus">+</span></summary>
+        <p>Garantin täcker alla installationsarbeten, kompressor samt samtliga delar vid normalt bruk. Vi står för arbete, material och resa inom Stockholms län under hela garantitiden.</p>
+      </details>
+      <details class="q">
+        <summary>Hur lång tid tar en installation?<span class="plus">+</span></summary>
+        <p>En standard luftvärmepump installeras på 4–6 timmar. Bergvärme tar vanligtvis 2–3 dagar. Vi bokar in ett kostnadsfritt hembesök först för att planera arbetet exakt.</p>
+      </details>
+      <details class="q">
+        <summary>Kan jag finansiera köpet?<span class="plus">+</span></summary>
+        <p>Ja, vi erbjuder räntefri avbetalning upp till 24 månader samt lån via våra partners. Ansök direkt i kassan eller fråga om alternativ vid hembesöket.</p>
+      </details>
+      <details class="q">
+        <summary>Behöver jag bygglov?<span class="plus">+</span></summary>
+        <p>För luftvärmepump krävs oftast inget bygglov. Bergvärme kräver tillstånd från kommunen – vi hjälper dig med hela ansökan utan extra kostnad.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section style="padding:40px 0 96px">
+  <div class="wrap">
+    <div class="cta-banner">
+      <div>
+        <h2>Börja spara redan i vår</h2>
+        <p>Installationer bokas nu in för maj. Boka ett kostnadsfritt hembesök idag och få ett fast pris inom 48 timmar.</p>
+      </div>
+      <div class="btns">
+        <a href="#booking" class="btn btn-primary">Boka hembesök</a>
+        <a href="#" class="btn btn-ghost">Ring 020 – 89 91 19</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand" style="display:inline-flex;align-self:flex-start;margin-bottom:22px">
+          <img src="varma-logo-transparent.png" alt="Varma" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1)" />
+        </div>
+        <p>Certifierad installation, service och reparation av värmepumpar i hela Stockholms län. Auktoriserad partner till Toshiba, Daikin och Mitsubishi.</p>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <span style="font-size:12px;padding:6px 10px;border:1px solid #22344C;border-radius:999px;color:#8A96A8">F-gas cert.</span>
+          <span style="font-size:12px;padding:6px 10px;border:1px solid #22344C;border-radius:999px;color:#8A96A8">Reco topp-10</span>
+          <span style="font-size:12px;padding:6px 10px;border:1px solid #22344C;border-radius:999px;color:#8A96A8">ISO 9001</span>
+        </div>
+      </div>
+      <div>
+        <h5>Produkter</h5>
+        <ul>
+          <li><a href="#">Luft-luft</a></li>
+          <li><a href="#">Luft-vatten</a></li>
+          <li><a href="#">Bergvärme</a></li>
+          <li><a href="#">Frånluft</a></li>
+          <li><a href="#">Butik</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Tjänster</h5>
+        <ul>
+          <li><a href="#">Installation</a></li>
+          <li><a href="#">Service &amp; reparation</a></li>
+          <li><a href="#">Serviceavtal</a></li>
+          <li><a href="#">Jourservice</a></li>
+          <li><a href="#">Finansiering</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Kontakt</h5>
+        <ul>
+          <li>020 – 89 91 19</li>
+          <li>hej@varma.se</li>
+          <li>Esplanaden 13, Sundbyberg</li>
+          <li>Sjöflygvägen 35, Täby</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Varma Kyl- &amp; Värmecenter AB · Org.nr 556xxx-xxxx</span>
+      <span><a href="#" style="color:#A9B4C4">Integritetspolicy</a> · <a href="#" style="color:#A9B4C4">Cookies</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- CHATBOT STUB -->
+<div class="chat-bubble">
+  <span class="pulse"></span>
+  Fråga Varma AI · svarar direkt
+</div>
+
+<script>
+// Minimal interactivity for the range display
+const r=document.querySelector('.calc-range');
+const l=document.querySelector('.calc-field label span');
+if(r&&l){r.addEventListener('input',e=>{l.textContent=e.target.value+' m²'})}
+
+// Chip toggle (single-select per group)
+document.querySelectorAll('.calc-chips').forEach(g=>{
+  g.addEventListener('click',e=>{
+    if(!e.target.classList.contains('calc-chip'))return;
+    g.querySelectorAll('.calc-chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
