@@ -1,0 +1,138 @@
+/* ============================================================
+   Florida MMJ Landing — page-scoped stylesheet
+   Loaded only on pages using page-florida-mmj-card.php template.
+   Mobile-first; desktop overrides via min-width queries where useful.
+   Design tokens follow the spec exactly (#2E7D32 primary, #FFB300 accent).
+   ============================================================ */
+
+:root{
+  --color-primary:#2E7D32;
+  --color-primary-700:#1B5E20;
+  --color-accent:#FFB300;
+  --color-accent-700:#E69E00;
+  --color-text:#1A1A1A;
+  --color-muted:#5B6770;
+  --color-bg:#FFFFFF;
+  --color-soft:#F4F8F4;
+  --color-border:#E5EAE6;
+  --radius:8px;
+  --radius-lg:14px;
+  --shadow-sm:0 1px 2px rgba(15,23,15,.06),0 1px 3px rgba(15,23,15,.04);
+  --shadow-md:0 6px 16px rgba(15,23,15,.08);
+  --pad-section:80px;
+  --pad-section-mobile:48px;
+  --pad-x:24px;
+  --container:1140px;
+  --font-sans:'Inter','Helvetica Neue',Helvetica,Arial,system-ui,sans-serif;
+}
+
+.vh-fl-lp *,
+.vh-fl-lp *::before,
+.vh-fl-lp *::after{box-sizing:border-box}
+
+.vh-fl-lp{font-family:var(--font-sans);color:var(--color-text);line-height:1.5}
+.vh-fl-lp img{max-width:100%;height:auto;display:block}
+.vh-fl-lp .container{max-width:var(--container);margin:0 auto;padding:0 var(--pad-x)}
+.vh-fl-lp .section{padding:var(--pad-section) 0}
+@media (max-width:768px){.vh-fl-lp .section{padding:var(--pad-section-mobile) 0}}
+
+/* Buttons */
+.vh-fl-lp .btn{display:inline-flex;align-items:center;gap:10px;padding:16px 32px;border-radius:var(--radius);font-size:16px;font-weight:600;text-decoration:none;border:0;cursor:pointer;transition:transform .08s ease,background .15s ease}
+.vh-fl-lp .btn-primary{background:var(--color-accent);color:#1A1A1A}
+.vh-fl-lp .btn-primary:hover{background:var(--color-accent-700)}
+.vh-fl-lp .btn-primary:active{transform:translateY(1px)}
+.vh-fl-lp .btn-ghost{background:transparent;color:var(--color-primary-700);border:1px solid var(--color-border);padding:14px 22px}
+.vh-fl-lp .btn-ghost:hover{background:var(--color-soft)}
+
+/* Hero */
+.vh-hero{background:linear-gradient(180deg,#F4F8F4 0%,#FFFFFF 100%)}
+.vh-hero .container{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+@media (max-width:900px){.vh-hero .container{grid-template-columns:1fr;gap:24px}}
+.vh-fl-lp .eyebrow{display:inline-flex;align-items:center;gap:8px;background:#E6F3E6;color:var(--color-primary-700);font-weight:600;font-size:13px;padding:6px 12px;border-radius:999px}
+.vh-fl-lp .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--color-primary);box-shadow:0 0 0 4px rgba(46,125,50,.18)}
+.vh-fl-lp h1{font-size:48px;line-height:1.08;letter-spacing:-.02em;margin:16px 0 14px;font-weight:800}
+@media (max-width:768px){.vh-fl-lp h1{font-size:32px;line-height:1.12}}
+.vh-fl-lp .subhead{font-size:19px;color:var(--color-muted);margin:0 0 28px;max-width:580px}
+.vh-fl-lp .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.vh-fl-lp .trust-strip{display:flex;align-items:center;gap:14px;margin-top:20px;color:var(--color-muted);font-size:14px}
+.vh-fl-lp .stars{color:#FFB300;letter-spacing:2px}
+.vh-fl-lp .hero-card{background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-md)}
+.vh-fl-lp .hero-card h3{margin:0 0 4px;font-size:18px}
+.vh-fl-lp .hero-card p{margin:0;color:var(--color-muted);font-size:14px}
+.vh-fl-lp .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.vh-fl-lp .stat{padding:14px;background:var(--color-soft);border-radius:10px}
+.vh-fl-lp .stat .num{font-weight:800;font-size:22px;color:var(--color-primary-700)}
+.vh-fl-lp .stat .lbl{font-size:12px;color:var(--color-muted)}
+
+/* Section H2 */
+.vh-fl-lp h2{font-size:32px;line-height:1.18;letter-spacing:-.01em;margin:0 0 12px;font-weight:800}
+@media (max-width:768px){.vh-fl-lp h2{font-size:24px}}
+.vh-fl-lp .section-intro{color:var(--color-muted);max-width:680px;margin:0 0 36px;font-size:17px}
+
+/* Steps */
+.vh-fl-lp .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media (max-width:768px){.vh-fl-lp .steps{grid-template-columns:1fr}}
+.vh-fl-lp .step{position:relative;padding:28px;background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-lg);transition:border-color .2s,transform .2s}
+.vh-fl-lp .step:hover{border-color:var(--color-primary);transform:translateY(-2px)}
+.vh-fl-lp .step-num{position:absolute;top:-16px;left:24px;width:32px;height:32px;border-radius:50%;background:var(--color-primary);color:#fff;font-weight:700;display:grid;place-items:center;font-size:14px}
+.vh-fl-lp .step-icon{width:48px;height:48px;border-radius:12px;background:var(--color-soft);color:var(--color-primary-700);display:grid;place-items:center;margin-bottom:16px}
+.vh-fl-lp .step-icon svg{width:24px;height:24px}
+.vh-fl-lp .step h3{margin:0 0 6px;font-size:18px;font-weight:700}
+.vh-fl-lp .step p{margin:0;color:var(--color-muted);font-size:15px}
+
+/* Conditions */
+.vh-fl-lp .conditions{background:var(--color-soft)}
+.vh-fl-lp .cond-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 32px;max-width:760px}
+@media (max-width:768px){.vh-fl-lp .cond-grid{grid-template-columns:1fr}}
+.vh-fl-lp .cond{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--color-border);font-size:16px}
+.vh-fl-lp .cond svg{flex:0 0 20px;width:20px;height:20px;color:var(--color-primary)}
+
+/* Doctors */
+.vh-fl-lp .doctors{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media (max-width:900px){.vh-fl-lp .doctors{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.vh-fl-lp .doctors{grid-template-columns:1fr}}
+.vh-fl-lp .doc{background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:20px;text-align:center}
+.vh-fl-lp .doc-photo{width:88px;height:88px;border-radius:50%;margin:0 auto 12px;background:linear-gradient(135deg,#C8E6C9,#A5D6A7);display:grid;place-items:center;color:var(--color-primary-700);font-weight:700;font-size:22px}
+.vh-fl-lp .doc-photo--img{background:none;object-fit:cover}
+.vh-fl-lp .doc h3{margin:0 0 4px;font-size:16px}
+.vh-fl-lp .doc .lic{font-size:13px;color:var(--color-muted)}
+
+/* Pricing */
+.vh-fl-lp .pricing{background:var(--color-soft)}
+.vh-fl-lp .price-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;margin:0 auto}
+@media (max-width:680px){.vh-fl-lp .price-row{grid-template-columns:1fr}}
+.vh-fl-lp .tile{position:relative;background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:32px;text-align:center}
+.vh-fl-lp .tile.featured{border-color:var(--color-primary);box-shadow:var(--shadow-md)}
+.vh-fl-lp .tile-flag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--color-primary);color:#fff;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 12px;border-radius:999px}
+.vh-fl-lp .tile h3{margin:0 0 8px;font-size:18px;color:var(--color-muted);font-weight:600}
+.vh-fl-lp .tile .price{font-size:48px;font-weight:800;color:var(--color-text);letter-spacing:-.02em}
+.vh-fl-lp .tile .price small{font-size:16px;font-weight:500;color:var(--color-muted)}
+.vh-fl-lp .tile p{margin:8px 0 0;color:var(--color-muted);font-size:14px}
+.vh-fl-lp .tile .btn{margin-top:18px}
+.vh-fl-lp .guarantee{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:28px;padding:14px 18px;background:#fff;border:1px dashed var(--color-primary);border-radius:999px;max-width:520px;margin-left:auto;margin-right:auto;color:var(--color-primary-700);font-weight:600;font-size:14px}
+
+/* FAQ */
+.vh-fl-lp .faq-list{max-width:760px;margin:0 auto;border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;background:#fff}
+.vh-fl-lp .faq-item{border-top:1px solid var(--color-border)}
+.vh-fl-lp .faq-item:first-child{border-top:0}
+.vh-fl-lp .faq-q{width:100%;text-align:left;background:#fff;border:0;padding:20px 22px;font-size:16px;font-weight:600;color:var(--color-text);display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;font-family:inherit}
+.vh-fl-lp .faq-q:hover,
+.vh-fl-lp .faq-q[aria-expanded="true"]{background:var(--color-soft)}
+.vh-fl-lp .faq-q .chev{transition:transform .2s ease;flex:0 0 20px;width:20px;height:20px}
+.vh-fl-lp .faq-q[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.vh-fl-lp .faq-a{padding:0 22px 22px;color:var(--color-muted);font-size:15px;display:none}
+.vh-fl-lp .faq-q[aria-expanded="true"]+.faq-a{display:block}
+
+/* Sticky mobile CTA */
+.vh-mob-cta{display:none}
+@media (max-width:768px){
+  .vh-mob-cta{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--color-border);padding:12px 16px;z-index:60;box-shadow:0 -2px 12px rgba(0,0,0,.06)}
+  .vh-mob-cta .btn{flex:1;justify-content:center;padding:14px 16px}
+  body.page-template-page-florida-mmj-card{padding-bottom:80px}
+}
+
+/* A11y */
+.vh-fl-lp :focus-visible{outline:3px solid var(--color-primary);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){
+  .vh-fl-lp *,.vh-fl-lp *::before,.vh-fl-lp *::after{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
