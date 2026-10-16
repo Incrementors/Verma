@@ -1,87 +1,104 @@
-# CRM changes the follow-up autopilot needs
+# CRM code changes for the follow-up autopilot
 
-From the first live run of `bd-followup-autopilot` (16 Oct 2026). Skill v1.01 works around all of these, but the CRM is the right place to fix them. Ordered by impact.
+Code changes only. Each one fixes its problem in the CRM itself, with no dependence on people changing habits. Found in the first live run of `bd-followup-autopilot` (16 Oct 2026). Ordered by impact.
 
-## 1. One client, several leads (highest risk)
+## 1. Link leads that belong to the same client
 
-34 clients have more than one active BD lead (78 leads in total), usually one per profile that bid on the same job. Examples with AI Autopilot on for two or more of their leads: Vanessa Grace Calvo (LD-3086, LD-3087, LD-3088), Greg D. (LD-3095, LD-3096), Houston Anderson (LD-3073, LD-3074), Adam Sweeney (LD-1555, LD-1556), Chady Khouzame (LD-1109, LD-1165), Brencee Alviz (LD-1198, LD-1199).
+Problem: 34 clients have more than one active BD lead (78 leads in total), usually one per profile that bid on the same Upwork job. Each lead has its own cadence, so one client can get two follow-ups the same day from two profiles. Examples: LD-3086, LD-3087 and LD-3088 (Vanessa Grace Calvo); LD-3095 and LD-3096 (Greg D.); LD-3073 and LD-3074 (Houston Anderson).
 
-Each lead has its own cadence, so the same client can get two follow-ups the same day from two of our profiles.
+Change:
+- Add `primaryLeadId` (or a `clientGroupId`) on leads.
+- When a lead is created, auto-link it to existing leads with the same Upwork job id (the part of `jobUrl` after the `~`) or the same `upworkRoomId`. If none, link on same name, company and country.
+- The primary lead is the one where the client wrote most recently (else the oldest). Only the primary gets a cadence and Followup tasks. Linked leads show "Follow-ups run on LD-xxxx".
+- One-time migration to link the existing 78.
+- A merge action on the lead page.
 
-Fix: link leads for the same Upwork job (job id in `jobUrl`) or the same client. One primary lead owns the cadence, and the others follow it. A merge action on the lead page would also help.
+Done when: the follow-up task job never creates two open Followup tasks for one client group, and `crm_leads_list` returns `primaryLeadId`.
 
-Skill workaround: it groups these leads, follows up only on the primary lead, sends at most one follow-up per client per day, and creates a "Same client on ..." task for the owner.
+## 2. Send guard inside the CRM, for every writer
 
-## 2. One canonical name per profile
+Problem: several automations send follow-ups on the same BD leads. The skill's caps only see its own sends, so real volume per profile and per client is higher than the caps show.
 
-The profile records are named `Shivaji` and `Prem`. Leads store `Shivaji Kumar Ram` (11 leads) and `Prem Chandra` (19 leads) in `profile` or `secondarySource`. The send result returns the short name.
+Change:
+- Enforce two checks in `crm_leads_upwork_send` (and the email and WhatsApp send paths for agents):
+  - at most one outbound message to a client group per IST day for automated follow-ups;
+  - a per-profile daily limit on Upwork sends.
+- Refuse the send with a clear reason when either limit is hit, whoever the caller is.
+- Store `sentBy` (the writer: skill name, live-chat, auto-check, person) on every outbound entry.
 
-Fix: store the profile record's name, or better its id, on leads. One-time cleanup: rename those 30 values to the record names.
+Done when: a second automated follow-up to the same client on the same day is refused, and every outbound row shows which writer sent it.
 
-Skill workaround: it resolves every name to the profile record through a fixed alias table.
+## 3. A non-admin "sent today" count
 
-## 3. One writer for BD follow-ups
+Problem: the daily cap is counted from `crm_audit_events`, which is admin only. On a non-admin account the count fails.
 
-On 15 and 16 Oct, other automations also sent Upwork follow-ups on BD leads (for example LD-1526 and LD-1530). Their sends don't carry the `[AI-FU]` tag, so the autopilot's own counters miss them.
+Change: add a small endpoint, for example `crm_outbound_counts {date}`, readable by agents. It returns outbound counts for the IST day: in total, per canonical profile, per writer, and per client group.
 
-Fix: decide that `bd-followup-autopilot` is the only automated BD follow-up writer. Switch off other routines and sessions that send BD follow-ups, including `upwork-playwright-followups` if it is scheduled anywhere. If another writer must stay, it should log the same `[AI-FU] profile=` note before each send.
+Done when: a non-admin agent can read today's counts in one call.
 
-Skill workaround: the cooldown and "one per client per day" now count messages from every writer. A profile that has already sent 15 Upwork messages today (from any writer) gets no more AI follow-ups.
+## 4. Profile id on leads, one canonical name
 
-## 4. An internal note type
+Problem: the same profile appears as `Shivaji` and `Shivaji Kumar Ram` (11 leads), and as `Prem` and `Prem Chandra` (19 leads). Send results return the short name. Name-based counts can count one person as two.
 
-The message type field only accepts: Client Message, Our Reply, Job Details, Followup Message I sent, Call Transcript, Voice Call, Client Background Info, Documents Provided By Client, Video Transcription Provided By Client, Meeting Minutes, Document Shared by Us, Email draft, File uploaded.
+Change:
+- Store `profileId` (the profile record id) on leads, and return it from sends.
+- Validate `profile` and `secondarySource` against the profile records on write, or derive the name from `profileId`.
+- Migration: map the 30 variant values to the record names.
 
-Fix (optional): add an internal type such as "AI Follow-up Research".
+Done when: every Upwork lead has a `profileId`, and no lead holds a profile name that is not a profile record name.
 
-Skill workaround: v1.01 logs research as `Client Background Info`, which the CRM accepts.
+## 5. Closing a Followup task needs a structured outcome
 
-## 5. Closing a follow-up task should need a real message
+Problem: Followup tasks get closed with no message behind them ("Confirmed done by Sahil on 13 Oct"). Owners write "no need to follow up" in the note but the lead stays on Autopilot. Unsent messages are logged as normal outbound entries ("placed in composer, NOT SENT", "awaiting human send").
 
-Some Followup tasks were closed as "Confirmed done by Sahil on 13 Oct" with no message on the timeline. Others had messages logged as "placed in composer, NOT SENT" or "awaiting human send".
+Change:
+- `crm_tasks_complete` and the close dialog take a required `outcome` for Followup tasks:
+  - `sent`: needs a linked outbound message with `delivery` sent, an Upwork story id or a Gmail id;
+  - `stop`: sets `followupStopped` and pauses AI Autopilot on the lead;
+  - `not_a_touch`: needs a reason, and does not count as a follow-up or advance `followupsTaken`.
+- `crm_conversations_log` stores an unsent outbound as `delivery: "draft"` (or pending), never as a plain sent message.
 
-Fix: closing a Followup task should require a sent or logged outbound message, or an explicit reason that is not a touch (for example "lead lost").
+Done when: no Followup task can be closed without an outcome, and `followupsTaken` only counts `sent` outcomes.
 
-Skill workaround: only messages that were really sent count. A message waiting for a person to send it makes the lead HELD.
+## 6. Save the Upwork room id when the lead is created
 
-## 6. Owners should use the switch, not a note
+Problem: six of the due leads had no `upworkRoomId`. The room finder found five, and one has none.
 
-On three leads, the owner wrote "recommend stopping cadence" or "no need to follow up" in a task note but left AI Autopilot on.
+Change: when the auto-check or lead capture creates a lead from an Upwork room, save the room id on it. Add a nightly backfill that runs the room finder on Upwork leads with no room and saves confident matches.
 
-Fix (team habit): switch AI Autopilot off, or stop the follow-up, when you mean stop. A "Stop follow-ups" button on the task close dialog would make this one click.
+Done when: new Upwork leads always have `upworkRoomId`, and system health counts Upwork leads with no room.
 
-Skill workaround: a stop note written by a person pauses AI Autopilot. A stop note written by an automation is held and creates a task for the owner.
+## 7. Cadence stops on leads with no reachable channel
 
-## 7. Save the Upwork room when the lead is created
+Problem: five LinkedIn leads (LD-2522 to LD-2526) have been due since 29 Aug, and there is no LinkedIn send route. LD-2039 has been due since 7 Jul with no room, and its website field holds an Upwork job link.
 
-Six of the due leads had no `upworkRoomId`. The room finder found five, and one has none.
+Change:
+- Add a system health check: "follow-up due, but the lead has no reachable channel" (no Upwork room, no mobile with a country code, no email thread, and no LinkedIn send route).
+- The follow-up task job assigns such leads to the owner as a manual follow-up, so they stop counting as AI follow-ups.
+- The website field rejects platform links (upwork, linkedin and similar) on write.
 
-Fix: save the room id when a lead is created from Upwork (the auto-check knows it at that point).
+Done when: the health check lists these leads, and no AI follow-up is due on an unreachable lead.
 
-## 8. Leads with no way to reach them
+## 8. An internal note message type
 
-Five LinkedIn leads (LD-2522 to LD-2526) have been due since 29 Aug, and the CRM has no LinkedIn send route. LD-2039 has been due since 7 Jul with no room, and its website field holds an Upwork job link.
+Problem: the message type field only accepts fixed types, none of which means an internal note. The autopilot logs research as `Client Background Info`.
 
-Fix: a system health check for "follow-up due but no reachable channel". Also stop putting platform links (Upwork job posts) in the website field.
+Change: add an internal type such as `AI Follow-up Research` (or `Internal Note`) to the allowed list.
 
-Skill workaround: it creates one "No send route" task per lead, then only counts these leads in later reports.
+Done when: `crm_conversations_log {dir: "note", type: "AI Follow-up Research"}` is accepted.
 
-## 9. A "due follow-ups" filter
+## 9. A "due follow-ups" query
 
-`crm_leads_list` has no filter for next follow-up date, AI Autopilot or source. The BD pipeline comes back as about 1 MB. Paging with `offset` works correctly (checked 16 Oct: offset 0 and offset 3 return different leads).
+Problem: `crm_leads_list` cannot filter by next follow-up date, AI Autopilot or source. The BD pipeline comes back as about 1 MB, just to build a queue of about 34 leads. Paging with `offset` itself works correctly.
 
-Fix: add filters `dueBy` (date), `aiPaused`, `followupStopped` and `source` to `crm_leads_list`, or add a small `crm_leads_due_followups` endpoint that returns only the fields the autopilot needs.
+Change: add filters `dueBy` (date), `aiPaused`, `followupStopped`, `sourceNot` and `fields` (to return only chosen columns) to `crm_leads_list`. Or add `crm_leads_due_followups {dueBy, pipeline}`, which returns only the fields a follow-up run needs.
 
-## 10. Timeline paging or summary
+Done when: one call returns today's due queue in a few kilobytes.
 
-Some lead timelines are over 100,000 characters.
+## 10. Timeline paging and filtering
 
-Fix: add `limit` and `before` paging to `crm_conversations_list_for_lead`, and a `dir` filter (in, out or note), so client-facing messages can be read without the transcripts.
+Problem: some lead timelines are over 100,000 characters, mostly call transcripts and uploaded documents.
 
-## 11. Admin account for the scheduled run
+Change: add `dir` (in, out, note), `types`, `limit` and `before` to `crm_conversations_list_for_lead`, plus a `maxTextChars` option that truncates long notes.
 
-The daily cap reads `crm_audit_events`, which is admin only. The routine must run under an admin account. If it doesn't, the skill drops to 33 sends per run and says so on the first line of its report.
-
-## 12. One-time cleanup of old outbound messages
-
-Older outbound messages from earlier writers contain figures nobody checked, such as "40%" and "3 to 5x reach". The skill now never reuses figures from automation-written messages, but a one-time review would remove the risk for every writer.
+Done when: an agent can read every client message of a lead without loading transcripts.
