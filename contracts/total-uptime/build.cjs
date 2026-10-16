@@ -7,13 +7,16 @@ const { chromium } = require('playwright');
 
 const OUT_DIR = __dirname;
 
+// Legal entity per UAE FTA VAT Registration Certificate (issued 22/04/2025).
 const PROVIDER = {
-  name: 'Incrementors Web Solutions',
-  address: ['2025 W El Camino Ave, Apt 102', 'Sacramento, CA 95833, USA'],
+  name: 'I want Online Marketing FZ-LLC',
+  dba: 'Incrementors',
+  address: ['FAMC3724 Compass Building, Al Shohada Road', 'Al Hamra Industrial Zone, Ras Al Khaimah', 'United Arab Emirates'],
+  registration: ['RAKEZ Licence No. 46000710', 'VAT TRN 104872048400003'],
   email: 'crm@incrementors.com',
-  phone: '+1 (916) 273-6673',
-  web: 'www.incrementors.com',
+  phone: '+971 50 509 2933',
 };
+PROVIDER.full = `${PROVIDER.name} dba ${PROVIDER.dba}`;
 
 const CLIENT = {
   name: 'Total Uptime Technologies LLC',
@@ -66,6 +69,7 @@ const CSS = `
   .party .role { font-size: 7.7pt; letter-spacing: 0.12em; text-transform: uppercase; color: #00808A; font-weight: 700; margin-bottom: 3px; }
   .party .name { font-weight: 700; color: #0E1E3B; font-size: 11.2pt; margin-bottom: 2px; }
   .party p { margin: 0; color: #334155; }
+  .party p.dba { color: #00808A; font-weight: 700; margin-bottom: 3px; }
   .party .sub { color: #64748B; margin-top: 5px; }
 
   h2 {
@@ -136,7 +140,7 @@ function header({ ref, title, lede, meta }) {
     .join('');
   return `
     <div class="brand-row">
-      <div class="brand">Incrementors<small>Web Solutions</small></div>
+      <div class="brand">${PROVIDER.dba}<small>${PROVIDER.name}</small></div>
       <div class="doc-type">Statement of Work<b>${ref}</b></div>
     </div>
     <h1>${title}</h1>
@@ -150,8 +154,9 @@ function parties(website) {
       <div class="party">
         <div class="role">Service Provider</div>
         <div class="name">${PROVIDER.name}</div>
+        <p class="dba">dba ${PROVIDER.dba}</p>
         <p>${PROVIDER.address.join('<br>')}</p>
-        <p class="sub">${PROVIDER.email} · ${PROVIDER.phone}</p>
+        <p class="sub">${PROVIDER.registration.join('<br>')}<br>${PROVIDER.email} · ${PROVIDER.phone}</p>
       </div>
       <div class="party">
         <div class="role">Client</div>
@@ -177,7 +182,7 @@ function signatures(n, heading = 'Acceptance', lead = 'By signing below, both pa
       <h2><span class="n">${n}.</span>${heading}</h2>
       <p>${lead}</p>
       <div class="sign">
-        ${block('For the Service Provider', PROVIDER.name, '')}
+        ${block('For the Service Provider', PROVIDER.full, '')}
         ${block('For the Client', CLIENT.name, CLIENT.contact)}
       </div>
     </div>`;
@@ -214,7 +219,7 @@ function edgenexusSow() {
     ${parties('https://www.edgenexus.io/')}
 
     ${section(1, 'Purpose', `
-      <p>This Statement of Work (“SOW”) records the search engine optimization (SEO) and generative engine optimization (GEO) services that ${PROVIDER.name} (“Incrementors”) provided for <b>edgenexus.io</b> during June and July 2026, and confirms the fees that remain outstanding for that period.</p>
+      <p>This Statement of Work (“SOW”) records the search engine optimization (SEO) and generative engine optimization (GEO) services that ${PROVIDER.name}, doing business as ${PROVIDER.dba} (“Incrementors”), provided for <b>edgenexus.io</b> during June and July 2026, and confirms the fees that remain outstanding for that period.</p>
       <p>Edgenexus is now part of Total Uptime. This SOW is therefore issued to ${CLIENT.name} (the “Client”) as the contracting party for edgenexus.io.</p>
     `)}
 
@@ -354,7 +359,7 @@ function totalUptimeSow() {
     ${parties('https://totaluptime.com/')}
 
     ${section(1, 'Purpose and Objectives', `
-      <p>This Statement of Work (“SOW”) sets out the search engine optimization (SEO) and generative engine optimization (GEO) services that ${PROVIDER.name} (“Incrementors”) will provide to ${CLIENT.name} (the “Client”) for <b>totaluptime.com</b>. It follows the 12-Month SEO Roadmap Incrementors shared with the Client in August 2026.</p>
+      <p>This Statement of Work (“SOW”) sets out the search engine optimization (SEO) and generative engine optimization (GEO) services that ${PROVIDER.name}, doing business as ${PROVIDER.dba} (“Incrementors”), will provide to ${CLIENT.name} (the “Client”) for <b>totaluptime.com</b>. It follows the 12-Month SEO Roadmap Incrementors shared with the Client in August 2026.</p>
       <p>The goal is to rebuild organic search traffic and make Total Uptime a cited source in AI search. Starting point (Semrush, August 18, 2026, US market) and 12-month targets:</p>
       <div class="goals">
         <div class="goal"><div class="l">Organic traffic / mo</div><div class="v">364<span>→</span><em>1,000+</em></div></div>
@@ -439,7 +444,7 @@ function totalUptimeSow() {
 
 function footer(ref, site) {
   return `<div style="width:100%;font-family:Carlito,sans-serif;font-size:7.7pt;color:#64748B;padding:0 0.75in;display:flex;justify-content:space-between;">
-    <span>${PROVIDER.name} · ${ref} · ${site}</span>
+    <span>${PROVIDER.full} · ${ref} · ${site}</span>
     <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
   </div>`;
 }
