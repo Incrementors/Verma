@@ -1,0 +1,12 @@
+xpofairs.com/robots.txt and xpofairs.com/sitemap.xml both return a 404 today, so Google and AI crawlers have no sitemap to follow to the show pages and exhibitor lists.
+
+A 2 minute screen recording of these issues on the live site: [YouTube link]
+
+The homepage, the What's On page and The Gift Fair UK 2026 page carry no structured data at all, so there is no Organization or Event markup for ChatGPT, Gemini or Google AI Overviews to read the brand, show dates and venues from. The Gift Fair UK 2026 page also has no H1 and shows "Type: TRADE_ONLY" with empty Industry and Website fields. The homepage title, "Trade Shows. Faster. Cheaper. Easier. Better.", never names XpoFairs, and the About page reuses the same title and description. The cookie banner on the event and blog pages still carries template copy saying the site wants "to spy on you" and know what visitors "had for breakfast this morning".
+
+Proof from a live Search Console account: for Neolemon, an AI cartoon app, "ai cartoon generator" moved from position 10 to 5.8 and clicks grew from 280 to 1,706, Nov to Jan vs Feb to Apr.
+
+Two questions. The footer links four show sites (The Gift Fair UK, The Gift Fair US, The Toy Show and Sports Licensing Now!), so which two complete the seven-site network? And is Search Console verified on all seven domains, with a set of buyer and exhibitor prompts already tracked in ChatGPT and Perplexity?
+
+Best regards,
+[Your Name]
