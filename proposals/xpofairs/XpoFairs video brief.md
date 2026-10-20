@@ -38,16 +38,18 @@ Narration (58 words):
 URL: https://xpofairs.com/robots.txt, then goto https://xpofairs.com/sitemap.xml (idle false).
 Actions: mark the nginx "404 Not Found" heading; goto sitemap; mark the "404 Look like you're lost" heading.
 Narration (54 words):
-> Now the two files crawlers look for first. robots.txt returns a 404 from the server. sitemap.xml lands on this 404 page too. So Google and the AI crawlers get no map of the shows, the event pages or the exhibitor lists. They have to find every page by following links.
+> Now the two files that crawlers look for first. robots.txt returns a 404 from the server. sitemap.xml lands on this 404 page too. So Google and the AI crawlers get no map of the shows, the event pages or the exhibitor lists. They have to find every page by following links.
 
-speech: "robots dot T X T", "sitemap dot X M L"
+speech: "Robots dot T X T", "Site map dot X M L", "four oh four". Scene 4 speech: "V Fairs", "Hoova" (Whova), "See-vent" (Cvent), "Expo Fairs" for XpoFairs throughout. Each one checked with a Scribe v2 transcript.
 
 ### Scene 3 - The Gift Fair UK 2026 event page
 
 URL: https://xpofairs.com/events-box-office/eventdetails/uk-gift-fair-sep-2026
-Actions: wait for the exhibitor table; inspect rows `h1` (bad), `schema` (bad); mark the details box ("Type: TRADE_ONLY", empty Industry and Website); mark the cookie banner text.
-Narration (66 words):
-> This is The Gift Fair UK 2026 page, with 122 exhibitors listed. There is no H1, and no Event markup with the dates and the venue. The details box shows Type, TRADE underscore ONLY, with Industry and Website left empty. And the cookie banner still says, so the deal is, we want to spy on you. That is template copy every new buyer sees.
+Actions: wait for the exhibitor table; inspect rows `h1` (bad), `schema` (bad); mark the details box ("Type: TRADE_ONLY", empty Industry); mark the cookie banner text.
+Narration (63 words, as recorded):
+> This is The Gift Fair UK 2026 page, with 122 exhibitors listed. There is no H1, and no Event markup telling Google the dates. The details box shows Type, TRADE underscore ONLY, with the Industry field left empty. And the cookie banner still says, so the deal is, we want to spy on you. That is template copy every new buyer sees.
+
+Changed on 2026-10-20 after the local re-check: the Website field is not empty (it links to https://www.thegiftfair.com/ as "Website Link"), so only Industry is called out. "The venue" was dropped because these are online shows with no venue on the page.
 
 ### Scene 4 - What AI search says today (rows)
 
@@ -58,7 +60,18 @@ Run on the Mac, 3 times each, and fill the pills from the results (format "XpoFa
 4. online toy trade show for buyers
 
 Command: `node scratch/ai-answers.mjs /work/ai-answers.json "XpoFairs"` plus the 4 questions. State the run date on screen.
-Narration: write after the run, 30 to 50 words, naming who AI tools recommend instead.
+
+Results, Perplexity (perplexity/sonar via OpenRouter), 2026-10-20 15:05 UTC, run with brand regex `xpo ?fairs`:
+
+| Question | Named instead | Pill |
+|---|---|---|
+| best online trade shows for gift retailers | The Gift Fair USA and Faire Market 3 of 3 | XpoFairs 0 of 3 (bad) |
+| online gift trade show UK 2026 | The Gift Fair UK 3 of 3, "Powered by the XpoFairs virtual event platform" once | XpoFairs 1 of 3 (neutral) |
+| virtual trade show platform for exhibitors | vFairs 3 of 3, Whova 2 of 3, Cvent 2 of 3 | XpoFairs 0 of 3 (bad) |
+| online toy trade show for buyers | Toy Fair International and ToyFairEverywhere 3 of 3 | XpoFairs 0 of 3 (bad) |
+
+Narration (48 words, as recorded):
+> I asked Perplexity 4 buyer and exhibitor questions today, 3 times each. Your show sites do get named: The Gift Fair UK, The Gift Fair USA, Toy Fair International. XpoFairs itself came up once in 12 answers. For virtual trade show platforms, it was vFairs, Whova and Cvent.
 
 ### Scene 5 - Live Search Console proof
 
@@ -76,8 +89,8 @@ Narration (44 words):
 | Months 4 to 6 | Show and exhibitor content, cross-site linking without overlap |
 | Months 4 to 6 | Third-party mentions, re-test the same prompts every month |
 
-Narration (52 words):
-> Here is how the 6 months would run. Months 1 to 3: fix crawling on all 7 sites, add the schema, fix the titles, and set an AI visibility baseline. Months 4 to 6: show and exhibitor content, linking the sites without them competing, outside mentions, and the same prompts re-tested every month.
+Narration (49 words, as recorded; "fix crawling on all 7 sites" was softened because only xpofairs.com was checked):
+> Here is how the 6 months would run. Months 1 to 3: robots and sitemaps across all 7 sites, the schema, the titles, and an AI visibility baseline. Months 4 to 6: show and exhibitor content, linking the sites without them competing, outside mentions, and the same prompts re-tested every month.
 
 ### Scene 7 - Outro
 
@@ -85,11 +98,11 @@ Narration (52 words):
 Narration (8 words):
 > Want these fixed? Just reply here on Upwork.
 
-Total before Scene 4: about 282 words, about 1:45. Scene 4 brings it to about 2:05 to 2:15.
+Final render: 2:10. Link and checks in `XpoFairs video link.md`.
 
 ## Sources
 
-Checked 2026-10-20 through Firecrawl (live fetch, maxAge 0). Direct curl from the cloud session was blocked by its network policy, so re-check each line with curl on the Mac before recording.
+Checked 2026-10-20 through Firecrawl (live fetch, maxAge 0). Re-checked on the Mac on 2026-10-20 around 15:05 UTC with curl (desktop Chrome UA, one request at a time, 0.5 s apart) and in rendered Chrome at 1600x860. Every line below held except the event page's Website field, corrected in place.
 
 | Claim | Source |
 |---|---|
@@ -103,10 +116,13 @@ Checked 2026-10-20 through Firecrawl (live fetch, maxAge 0). Direct curl from th
 | sitemap_index.xml 404 | https://xpofairs.com/sitemap_index.xml, HTTP 404 |
 | llms.txt 404 | https://xpofairs.com/llms.txt, HTTP 404 |
 | Event page has no H1, only H2 "What's On / THE GIFT FAIR UK 2026" | event page rendered HTML |
-| "Type: TRADE_ONLY", empty Industry and Website | event page text |
+| "Type: TRADE_ONLY", empty Industry (Website is filled: "Website Link" to https://www.thegiftfair.com/) | event page rendered DOM, `[class*=eventInnerPAd_info]` |
 | 122 exhibitors | event page "Exhibitors 122" |
 | Event title "Xpo Fairs \| The Gift Fair UK 2026" | event page `<title>` |
-| Cookie banner "So the deal is, we want to spy on you. We want to know things like what you had for breakfast this morning." | events-box-office, event page and blog page text |
+| Cookie banner "So the deal is, we want to spy on you. We want to know things like what you had for breakfast this morning." | rendered on the homepage and the event page; in the HTML of /events-box-office and /blog |
+| The banner is template copy | Mantine UI CookiesBanner template (github.com/mantinedev/ui.mantine.dev, lib/CookiesBanner/CookiesBanner.tsx) opens with "So the deal is, we want to spy on you"; the site's banner uses `CookiesBanner_*` classes on Mantine |
+| PageSpeed: no real-user data, so speed is not raised | pagespeed.web.dev mobile, 2026-10-20 20:35 IST: field data "No Data", lab Performance 37, LCP 17.6 s (https://pagespeed.web.dev/analysis/https-xpofairs-com/08b4eumafb?form_factor=mobile) |
+| AI baseline: XpoFairs 1 of 12 answers | Perplexity sonar via OpenRouter, 4 questions x 3 runs, 2026-10-20 15:05 UTC; tallies in Scene 4; raw answers in `~/Apps/case-study-videos/work/xpofairs-ai-answers.json` on the Mac |
 | About page reuses the homepage title and description | https://xpofairs.com/about-us metadata |
 | Footer links 4 show sites: The Gift Fair UK (thegiftfair.com), The Gift Fair US (thegiftfair.us), The Toy Show (toyfairinternational.com), Sports Licensing Now! (sportslicensingnow.com) | homepage footer |
 | Neolemon GSC numbers | Proof library in the skill, shown live in Search Console |
@@ -116,15 +132,15 @@ Checked 2026-10-20 through Firecrawl (live fetch, maxAge 0). Direct curl from th
 1. Footer "Future Star Award", "Referral Scheme" and "Booth Design Award" all link to https://xpofairs.com/; "Cookie Policy" links to the Terms page; "Instruction Videos" links to the FAQ.
 2. Footer Instagram icon goes to instagram.com/thegiftfair.uk, not an XpoFairs account.
 3. og:url is https://xpofairs.com on the What's On, event and blog pages, so every shared link previews as the homepage.
-4. Homepage marquee repeats "attend, discover, chat, connect, meet" as H3 headings, 58 times each (290 H3s) in Firecrawl's desktop render. Re-count live at 1600x860 before using a number.
+4. Dropped: the 290 H3 count did not hold. Live at 1600x860 on 2026-10-20 the homepage has 11 H3s (attend, discover, chat, connect, meet twice each, plus "Upcoming trade shows").
 5. Upcoming show images on the homepage have alt text "Trade Show 0" to "Trade Show 4", no show names.
 6. The 404 page sends both "noindex" and "index, follow" robots tags.
 7. Sports Licensing Now! event slug says 2026 (eu-sports-licensing-now-2026) while the dates are Sep 16 to 29 2027.
 
-## Still to do on the Mac
+## Done on the Mac (2026-10-20)
 
-1. Re-check every source line with curl (desktop Chrome UA, 0.5 s gaps).
-2. PageSpeed: `node scratch/psi.mjs https://xpofairs.com/`. Raise speed only if Core Web Vitals fail for real users.
-3. AI baseline for Scene 4.
-4. Steps 3 to 7: storyboard, voice, preview, render, verify, upload Unlisted to "Proposals and Audits".
-5. Put the youtu.be link into the cover, set the sign-off name, re-run the lint.
+1. Job re-checked: find_jobs get on Ankur Gupta says ACTIVE, applied false, totalHired 0, totalOffered 0. crm_cover_submissions_list since 2026-10-20 has no cover for this URL.
+2. Every source line re-checked with curl and rendered Chrome. One correction (Website field), one reserve finding dropped (H3 count).
+3. PageSpeed run: no real-user data, speed not raised.
+4. AI baseline run for Scene 4.
+5. Storyboard at `~/Apps/case-study-videos/jobs/xpofairs-proposal/storyboard.json`.
