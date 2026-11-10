@@ -9,8 +9,8 @@
  * Install: Extensions → Apps Script → paste this file as Code.gs and Sidebar.html as an
  * HTML file named "Sidebar" → save → reload the sheet → menu "Tracking Monitor" → Open settings.
  *
- * The connection URL is stored in the private User Properties of the person who saves it.
- * It never appears in the sheet, and other editors can't read it.
+ * The connection URL and API token are stored in the private User Properties of the person who saves them.
+ * They never appear in the sheet, and other editors can't read them.
  */
 
 // ───────────────────────────── Settings ─────────────────────────────
@@ -59,6 +59,7 @@ const CODES = {
   NO_STREAM:      { sev: 'red',   label: '🔴 Not collecting' },
   NO_DATA:        { sev: 'red',   label: '🔴 Not tracking' },
   NO_DATA_EVER:   { sev: 'red',   label: '🔴 No data (5 wks)' },
+  NO_DATA_LIVE:   { sev: 'red',   label: '🔴 Not tracking' },
   DROP:           { sev: 'red',   label: '🔴 Tracking drop' },
   UNDER_TRACKING: { sev: 'red',   label: '🔴 Under-tracking' },
   REAL_DROP:      { sev: 'amber', label: '🟠 Traffic drop' },
@@ -72,6 +73,10 @@ const CODES = {
   OK:             { sev: 'green', label: '🟢 OK' }
 };
 const GSC_LABELS = { NO_DATA: '🔴 No impressions', DROP: '🔴 Impressions drop' };
+const GA_LABELS = { DUPLICATE: '⚪ Duplicate property' };
+const DORMANT_CODES = ['NO_DATA_EVER', 'NO_STREAM']; // no data and no sign of a live site: listed compactly in emails
+const MIN_TRACKED_SESSIONS = 5;      // a property below this many sessions/week was never really "tracking"
+const MIN_TRACKED_IMPRESSIONS = 10;
 const STICKY_CODES = ['DROP', 'NO_DATA', 'UNDER_TRACKING'];
 
 const GA_COLS = [
@@ -162,7 +167,7 @@ function thmGetState() {
     me: me,
     tz: Session.getScriptTimeZone(),
     config: getConfig_(),
-    conn: { savedForMe: !!url, masked: url ? maskUrl_(url) : '', info: getJson_('THM_CONN') },
+    conn: { savedForMe: !!url, masked: url ? maskUrl_(url) : '', tokenSaved: !!getConnToken_(), tokenMasked: maskToken_(getConnToken_()), info: getJson_('THM_CONN') },
     schedule: sch ? Object.assign({}, sch, { mine: !!me && sch.owner === me, active: active }) : null,
     lastRun: getJson_('THM_LAST_RUN'),
     running: !!getRunState_()
@@ -171,12 +176,20 @@ function thmGetState() {
 
 function thmSaveSettings(form) {
   form = form || {};
+  // A token pasted into the URL box is still a token.
+  if (form.url && /^sk_/i.test(String(form.url).trim()) && !form.token) { form.token = form.url; form.url = ''; }
+  const up = PropertiesService.getUserProperties();
   if (form.url) {
     const url = String(form.url).trim();
-    if (!/^https:\/\/\S+$/i.test(url)) throw new Error('The connection URL should be the full https:// address, including ?key=…');
-    PropertiesService.getUserProperties().setProperty('THM_URL', url);
-    setJson_('THM_CONN', { owner: me_(), savedAt: Date.now(), host: hostOf_(url) });
+    if (!/^https:\/\/\S+$/i.test(url)) throw new Error('The connection URL should be the full https:// address of the dashboard endpoint (…/mcp).');
+    up.setProperty('THM_URL', url);
   }
+  if (form.token) {
+    const token = String(form.token).trim().replace(/^Bearer\s+/i, '');
+    if (/\s/.test(token) || token.length < 10) throw new Error('That API token doesn\'t look right. Paste the whole token (it starts with sk_).');
+    up.setProperty('THM_TOKEN', token);
+  }
+  if (form.url || form.token) setJson_('THM_CONN', { owner: me_(), savedAt: Date.now(), host: hostOf_(getConnUrl_()) });
   const c = getConfig_();
   const n = (v, d, lo, hi) => {
     if (v === '' || v == null) return d;
@@ -210,6 +223,7 @@ function thmSaveSettings(form) {
 
 function thmClearConnection() {
   PropertiesService.getUserProperties().deleteProperty('THM_URL');
+  PropertiesService.getUserProperties().deleteProperty('THM_TOKEN');
   const info = getJson_('THM_CONN');
   if (info && info.owner === me_()) PropertiesService.getDocumentProperties().deleteProperty('THM_CONN');
   return thmGetState();
@@ -220,7 +234,7 @@ function thmTestConnection() {
   if (!url) throw new Error('No connection is saved for your account yet. Paste the URL and save.');
   const cfg = getConfig_();
   if (!cfg.account) throw new Error('Enter the reporting account (the Google account connected in the dashboard) and save.');
-  const found = discover_(new McpClient_(url), cfg);
+  const found = discover_(new McpClient_(url, getConnToken_()), cfg);
   return 'Connected ✓  ' + cfg.account + ' can see ' + found.props.length + ' GA4 properties (in ' +
     found.gaAccounts + ' accounts) and ' + found.sites.length + ' Search Console sites.';
 }
@@ -305,7 +319,7 @@ function runCheck_(trigger, opts) {
     }
     if (!cfg.account) throw userErr_('Set the reporting account (e.g. reports@yourdomain.com) in Tracking Monitor → Open settings.');
     const deadline = Date.now() + THM.SLICE_MS;
-    const client = new McpClient_(url);
+    const client = new McpClient_(url, getConnToken_());
     state = getRunState_();
     if (state && Date.now() - state.startedAt > THM.STALE_RUN_MS) { clearRunState_(); state = null; }
     if (!state && trigger === 'Continue') return { ok: true, message: 'Nothing left to continue.' };
@@ -402,11 +416,12 @@ function discover_(client, cfg) {
     }
   });
   const props = [];
-  const accounts = (ga.data && ga.data.ga_accounts) || [];
+  const accounts = Array.isArray(ga.data) ? ga.data : ((ga.data && ga.data.ga_accounts) || []);
   accounts.forEach(a => (a.properties || []).forEach(p => {
     if (p && p.property_id) props.push({ account: a.account || '', pid: String(p.property_id), name: p.name || p.property_id });
   }));
-  const sites = ((gsc.data && gsc.data.sites) || []).filter(s => s && s.site_url)
+  const siteList = Array.isArray(gsc.data) ? gsc.data : ((gsc.data && gsc.data.sites) || []);
+  const sites = siteList.filter(s => s && s.site_url)
     .map(s => ({ site: String(s.site_url), access: accessLabel_(s.permission_level) }));
   return { props: props, sites: sites, gaAccounts: accounts.length };
 }
@@ -540,10 +555,10 @@ function evaluateGsc_(r, cur, base, cfg) {
   const red = cfg.redDrop / 100, amber = cfg.amberDrop / 100;
   const fix = ' Check the site can still be indexed: no "noindex" tags, robots.txt not blocking, sitemap submitted, redirects correct, ' +
     'no manual actions. This happens most often after a redesign or migration.';
-  if (impr7 === 0 && imprBase === 0 && !sticky) {
+  if (impr7 === 0 && imprBase < MIN_TRACKED_IMPRESSIONS && !sticky) {
     out.code = 'NO_DATA_EVER';
-    out.issue = 'No search impressions at all in the last 5 weeks. If this site is live, Google isn\'t showing it.' + fix +
-      ' If this property is unused, set Monitor? = No.';
+    out.issue = (imprBase > 0 ? 'Almost no search impressions in the last 5 weeks (' + fmtN_(imprBase * 4) + ' in total).' : 'No search impressions at all in the last 5 weeks.') +
+      ' If this site is live, Google isn\'t showing it.' + fix + ' If this property is unused, set Monitor? = No.';
   } else if (impr7 === 0) {
     out.code = 'NO_DATA';
     out.issue = '0 impressions in the last 7 days (normally ~' + fmtN_(ref) + '/week).' + fix;
@@ -632,7 +647,7 @@ function phaseGa_(client, state, cfg, deadline) {
   const gscIdx = buildGscIndex_();
   const hostCounts = {};
   t.rows.forEach(r => {
-    if (!r.pid || r.code === 'REMOVED') return;
+    if (!r.pid || !isMonitored_(r) || ['REMOVED', 'NO_ACCESS', 'NO_DATA_EVER', 'NO_STREAM', 'DUPLICATE'].indexOf(r.code) >= 0) return;
     const h = siteBase_(firstUrl_(r.website));
     if (h) hostCounts[h] = (hostCounts[h] || 0) + 1;
   });
@@ -658,7 +673,27 @@ function phaseGa_(client, state, cfg, deadline) {
     });
     writeTable_(t);
   }
+  markGaDuplicates_(t, state);
+  writeTable_(t);
   return true;
+}
+
+/** An empty GA4 property whose website reports into another property is an old/duplicate one, not a fault. */
+function markGaDuplicates_(t, state) {
+  const live = t.rows.filter(r => r.pid && num_(r.s7) > 0 && siteBase_(firstUrl_(r.website)));
+  t.rows.forEach(r => {
+    if (r.code !== 'NO_DATA_EVER' && r.code !== 'NO_DATA_LIVE') return;
+    const base = siteBase_(firstUrl_(r.website));
+    if (!base) return;
+    const sib = live.filter(o => o !== r && siteBase_(firstUrl_(o.website)) === base).sort((a, b) => num_(b.s7) - num_(a.s7))[0];
+    if (sib) {
+      applyResult_(r, 'ga', {
+        code: 'DUPLICATE',
+        issue: 'No data here, but "' + sib.property + '" (' + sib.pid + ') receives this website\'s data, so this looks like an old or duplicate property. ' +
+          'Nothing to fix; you can set Monitor? = No.'
+      }, state);
+    }
+  });
 }
 
 function evaluateGa_(r, rep, tag, gsc, opt, cfg, d) {
@@ -699,13 +734,19 @@ function evaluateGa_(r, rep, tag, gsc, opt, cfg, d) {
   const gscNote = gscNote_(gsc);
   let code = 'OK', issue = '';
 
-  if (s7 === 0 && base28 === 0 && !sticky) {
+  const searchClicks = gsc && gsc.clicks7 !== '' ? num_(gsc.clicks7) : 0;
+  const hardlyAny = base28 > 0 ? 'Almost no sessions in the last 5 weeks (' + fmtN_(base28) + ' in total)' : 'No sessions at all in the last 5 weeks';
+  if (s7 === 0 && rolling < MIN_TRACKED_SESSIONS && !sticky) {
     if (r.website === '(no data stream)') {
       code = 'NO_STREAM';
       issue = 'This property has no data stream, so it can\'t collect website data. If a site should report here, create a web stream and install its tag. If it\'s unused, set Monitor? = No.';
+    } else if (searchClicks >= 10) {
+      code = 'NO_DATA_LIVE';
+      issue = hardlyAny + ', but Google search sent ' + fmtN_(searchClicks) + ' clicks to this site last week, so the site is live and GA4 isn\'t recording it.' +
+        tagNote + ' If the client now uses a different GA4 property, set Monitor? = No here.';
     } else {
       code = 'NO_DATA_EVER';
-      issue = 'No sessions at all in the last 5 weeks. If this website is live, the GA4 tag is missing or broken.' + tagNote +
+      issue = hardlyAny + '. If this website is live, the GA4 tag is missing or broken.' + tagNote +
         ' If this is an old, test or duplicate property, set Monitor? = No.';
     }
   } else if (s7 === 0) {
@@ -803,8 +844,7 @@ function matchGsc_(url, idx) {
   if (!host) return null;
   const base = host.replace(/^www\./, '');
   const tiers = [
-    idx.filter(e => e.type === 'url' && e.host === host),
-    idx.filter(e => e.type === 'url' && e.base === base),
+    idx.filter(e => e.type === 'url' && e.base === base), // http/https/www versions of the same site: the one with the clicks wins
     idx.filter(e => e.type === 'domain' && (base === e.base || base.slice(-(e.base.length + 1)) === '.' + e.base))
   ];
   let fallback = null;
@@ -905,6 +945,7 @@ function applyResult_(r, source, res, state) {
 
 function labelFor_(source, code) {
   if (source === 'gsc' && GSC_LABELS[code]) return GSC_LABELS[code];
+  if (source === 'ga' && GA_LABELS[code]) return GA_LABELS[code];
   return (CODES[code] || CODES.OK).label;
 }
 
@@ -950,7 +991,8 @@ function finalize_(state, cfg) {
 
   const issues = collectIssues_(ga, 'GA4', state).concat(collectIssues_(gsc, 'Search Console', state));
   const order = { red: 0, amber: 1 };
-  issues.sort((a, b) => (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1) || order[a.sev] - order[b.sev] || String(a.since).localeCompare(String(b.since)));
+  issues.sort((a, b) => (a.dormant === b.dormant ? 0 : a.dormant ? 1 : -1) || (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1) ||
+    order[a.sev] - order[b.sev] || String(a.since).localeCompare(String(b.since)));
   writeIssues_(issues, state);
 
   const cGa = countSev_(ga, r => r.pid), cGsc = countSev_(gsc, r => r.site);
@@ -1013,7 +1055,8 @@ function collectIssues_(t, source, state) {
     isNew: toYmd_(r.since) === state.runDate,
     latest: source === 'GA4' ? r.s7 : r.impr7,
     latestLabel: source === 'GA4' ? 'sessions' : 'impressions',
-    notes: r.notes || ''
+    notes: r.notes || '',
+    dormant: DORMANT_CODES.indexOf(r.code) >= 0
   }));
 }
 
@@ -1067,17 +1110,23 @@ function sendReport_(issues, totals, state, cfg) {
   if (!cfg.emailOn) return 'Email alerts off';
   const to = parseEmails_(cfg.recipients);
   if (!to.length) return 'No email recipients set';
-  const fresh = issues.filter(i => i.isNew);
+  const active = issues.filter(i => !i.dormant);
+  const fresh = active.filter(i => i.isNew);
+  const dormantNew = issues.filter(i => i.dormant && i.isNew).length;
   const dateTxt = prettyDate_(state.runDate);
   let subject;
   if (!issues.length) {
     if (!cfg.allClear) return 'All clear (no email)';
     subject = '✅ Tracking check: all clear, ' + dateTxt;
+  } else if (!active.length) {
+    if (cfg.alertMode === 'new' && !dormantNew) return 'No new problems (no email)';
+    if (!cfg.allClear && !dormantNew) return 'Nothing broken (no email)';
+    subject = '✅ Tracking check: nothing broken, ' + dateTxt;
   } else {
-    if (cfg.alertMode === 'new' && !fresh.length) return 'No new problems (no email)';
-    const red = issues.filter(i => i.sev === 'red').length;
+    if (cfg.alertMode === 'new' && !fresh.length && !dormantNew) return 'No new problems (no email)';
+    const red = active.filter(i => i.sev === 'red').length;
     subject = (red ? '🔴 ' : '🟠 ') + 'Tracking check: ' + (fresh.length ? fresh.length + ' new problem' + (fresh.length > 1 ? 's' : '') + ', ' : '') +
-      issues.length + ' open, ' + dateTxt;
+      active.length + ' open, ' + dateTxt;
   }
   if (MailApp.getRemainingDailyQuota() < 1) return 'Daily email quota used up';
   MailApp.sendEmail({ to: to.join(','), subject: subject, name: cfg.fromName || DEFAULTS.fromName, htmlBody: reportHtml_(issues, fresh, totals, state, cfg) });
@@ -1103,20 +1152,35 @@ function reportHtml_(issues, fresh, totals, state, cfg) {
     if (list.length > max) h += '<tr><td colspan="4">…and ' + (list.length - max) + ' more in the sheet.</td></tr>';
     return h + '</table>';
   };
+  const dormantAll = issues.filter(i => i.dormant).length;
+  const dormant = issues.filter(i => i.dormant && (cfg.alertMode !== 'new' || i.isNew));
+  issues = issues.filter(i => !i.dormant);
+  fresh = fresh.filter(i => !i.dormant);
   const ongoing = issues.filter(i => !i.isNew);
+  const red = issues.filter(i => i.sev === 'red').length, amber = issues.filter(i => i.sev === 'amber').length;
   let html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#202124;max-width:820px">';
   html += '<p style="font-size:16px"><b>GA4 & Search Console tracking check: ' + esc_(prettyDate_(state.runDate)) + '</b></p>';
-  html += '<p>🔴 ' + totals.red + ' need action &nbsp;·&nbsp; 🟠 ' + totals.amber + ' to check &nbsp;·&nbsp; 🟢 ' + totals.green +
-    ' fine, across ' + totals.ga + ' GA4 properties and ' + totals.gsc + ' Search Console sites.</p>';
+  html += '<p>🔴 ' + red + ' need action &nbsp;·&nbsp; 🟠 ' + amber + ' to check &nbsp;·&nbsp; 🟢 ' + totals.green + ' fine' +
+    (dormantAll ? ' &nbsp;·&nbsp; ' + dormantAll + ' with no data for 5+ weeks' : '') +
+    ', across ' + totals.ga + ' GA4 properties and ' + totals.gsc + ' Search Console sites.</p>';
   if (state.firstRun) html += '<p style="color:#5f6368">This is the first check, so everything found is listed as new.</p>';
   if (state.stats.failed && state.stats.failed > (state.stats.checkedGa + state.stats.checkedGsc) / 2) {
     html += '<p style="background:#fce8b2;padding:8px"><b>Most checks failed this run.</b> The data connection or the reporting account (' +
       esc_(cfg.account) + ') may be having problems. The results below may be incomplete.</p>';
   }
-  if (!issues.length) html += '<p>Every monitored property is reporting normally. Nothing to do.</p>';
+  if (!issues.length) html += '<p>' + (dormant.length ? 'Nothing is broken among the properties that are in use.' : 'Every monitored property is reporting normally. Nothing to do.') + '</p>';
   if (fresh.length) html += '<h3 style="margin:18px 0 6px">New this week (' + fresh.length + ')</h3>' + table(fresh);
   if (ongoing.length && cfg.alertMode !== 'new') html += '<h3 style="margin:18px 0 6px">Still open (' + ongoing.length + ')</h3>' + table(ongoing);
   else if (ongoing.length) html += '<p>' + ongoing.length + ' older problem(s) are still open; see the sheet.</p>';
+  if (dormant.length) {
+    const maxD = 80;
+    html += '<h3 style="margin:18px 0 6px">No data for 5+ weeks (' + dormant.length + ')</h3>' +
+      '<p style="color:#5f6368;margin:0 0 6px">These look unused: old, test or duplicate properties, or sites that are offline. Set <b>Monitor? = No</b> on any the client ' +
+      'doesn\'t use and they stop appearing. If one of them should be live, its tag is missing.</p><p style="font-size:13px;line-height:1.6">' +
+      dormant.slice(0, maxD).map(i => esc_(i.name) + (i.account && i.account !== i.name ? ' <span style="color:#5f6368">(' + esc_(i.account) + ')</span>' : '') +
+        (i.isNew ? ' <b style="color:#c5221f">new</b>' : '')).join('<br>') +
+      (dormant.length > maxD ? '<br>…and ' + (dormant.length - maxD) + ' more in the sheet.' : '') + '</p>';
+  }
   html += '<p style="margin-top:18px"><a href="' + link + '">Open the tracking sheet</a></p>';
   html += '<p style="color:#5f6368;font-size:12px">GA4 = sessions ' + esc_(prettyRange_(d.gaStart, d.gaEnd)) +
     ', compared with the 4 weeks before. Search Console = ' + esc_(prettyRange_(d.gscStart, d.gscEnd)) +
@@ -1142,8 +1206,9 @@ function failureHtml_(msg, isConnection, cfg) {
  * Minimal client for the reporting dashboard's MCP endpoint (Streamable HTTP, JSON-RPC 2.0).
  * Handles plain JSON and text/event-stream replies, optional Mcp-Session-Id, retries and parallel calls.
  */
-function McpClient_(url) {
+function McpClient_(url, token) {
   this.url = url;
+  this.token = token || '';
   this.sessionId = null;
   this.protocolVersion = null;
   this.ready = false;
@@ -1152,6 +1217,7 @@ function McpClient_(url) {
 
 McpClient_.prototype.options_ = function (body, afterInit) {
   const headers = { Accept: 'application/json, text/event-stream' };
+  if (this.token) headers.Authorization = 'Bearer ' + this.token;
   if (this.sessionId) headers['Mcp-Session-Id'] = this.sessionId;
   if (afterInit && this.protocolVersion) headers['MCP-Protocol-Version'] = this.protocolVersion;
   return { method: 'post', contentType: 'application/json', headers: headers, payload: JSON.stringify(body), muteHttpExceptions: true, followRedirects: true };
@@ -1166,7 +1232,13 @@ McpClient_.prototype.initialize_ = function () {
   }, false));
   const code = resp.getResponseCode();
   const text = resp.getContentText();
-  if (code === 401 || code === 403) throw connErr_('The data connection refused the key (HTTP ' + code + '). Check the connection URL in settings.');
+  if (code === 401 || code === 403) {
+    let why = '';
+    try { why = JSON.parse(text).message || ''; } catch (e) { why = short_(text, 120); }
+    why = String(why).replace(/[.\s]+$/, '');
+    throw connErr_('The data connection refused the credentials (HTTP ' + code + (why ? ': ' + why : '') + '). ' +
+      (this.token ? 'Check the API token in settings is current.' : 'Add the API token (sk_…) in settings.'));
+  }
   if (code >= 400) throw connErr_('The data connection returned HTTP ' + code + ': ' + short_(text, 160));
   const headers = lowerKeys_(resp.getAllHeaders());
   if (headers['mcp-session-id']) this.sessionId = String(headers['mcp-session-id']);
@@ -1206,7 +1278,7 @@ McpClient_.prototype.callMany = function (calls) {
       const text = resp.getContentText();
       if (code === 404 && this.sessionId) { sessionLost = true; retry.push(i); results[i] = { ok: false, kind: 'error', error: 'Session expired' }; return; }
       if (code === 429 || code >= 500) { retry.push(i); results[i] = { ok: false, kind: 'error', error: 'HTTP ' + code + ' from data connection' }; return; }
-      if (code === 401 || code === 403) { results[i] = { ok: false, kind: 'connection', error: 'Data connection refused the key (HTTP ' + code + ')' }; return; }
+      if (code === 401 || code === 403) { results[i] = { ok: false, kind: 'connection', error: 'Data connection refused the API token (HTTP ' + code + ')' }; return; }
       if (code >= 400) { results[i] = { ok: false, kind: 'error', error: 'HTTP ' + code + ': ' + short_(text, 120) }; return; }
       const headers = lowerKeys_(resp.getAllHeaders());
       results[i] = toolResult_(parseRpc_(text, headers['content-type'], ids[i]), text);
@@ -1414,6 +1486,14 @@ function getConfig_() {
 
 function getConnUrl_() {
   return PropertiesService.getUserProperties().getProperty('THM_URL') || '';
+}
+
+function getConnToken_() {
+  return PropertiesService.getUserProperties().getProperty('THM_TOKEN') || '';
+}
+
+function maskToken_(t) {
+  return t ? t.slice(0, 3) + '…' + t.slice(-4) : '';
 }
 
 function getJson_(key) {

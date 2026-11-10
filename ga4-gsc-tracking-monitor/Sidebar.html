@@ -41,12 +41,14 @@
 
 <h3>1. Data connection</h3>
 <label for="url">Connection URL</label>
-<input type="password" id="url" autocomplete="off" placeholder="Paste the full https://…/mcp?key=… URL">
+<input type="password" id="url" autocomplete="off" placeholder="https://…/mcp">
+<label for="token">API token</label>
+<input type="password" id="token" autocomplete="off" placeholder="sk_…">
 <div class="hint" id="connHint"></div>
 <label for="account">Reporting account</label>
 <input type="text" id="account" placeholder="reports@yourdomain.com">
 <div class="hint">The Google account (in the reporting dashboard) whose GA4 and Search Console access is checked. Only this account is ever queried.</div>
-<button onclick="save(true, 'connMsg')">Save &amp; test</button><button onclick="clearConn()">Remove my saved URL</button>
+<button onclick="save(true, 'connMsg')">Save &amp; test</button><button onclick="clearConn()">Remove my saved connection</button>
 <div id="connMsg" class="msg"></div>
 
 <h3>2. Email alerts</h3>
@@ -147,8 +149,10 @@
     $('newMonitorDefault').value = c.newMonitorDefault;
 
     var info = state.conn.info;
+    $('token').placeholder = state.conn.tokenSaved ? 'Saved: ' + state.conn.tokenMasked : 'sk_…';
     if (state.conn.savedForMe) {
-      $('connHint').textContent = 'Saved privately for you (' + state.conn.masked + '). Leave the box empty to keep it, or paste a new URL to replace it.';
+      $('connHint').textContent = 'Saved privately for you (' + state.conn.masked + (state.conn.tokenSaved ? ' · token ' + state.conn.tokenMasked : ' · no API token yet') +
+        '). Leave a box empty to keep what is saved, or paste a new value to replace it.';
       $('url').placeholder = 'Saved: ' + state.conn.masked;
     } else if (info && info.owner) {
       $('connHint').textContent = 'Saved by ' + info.owner + ' (only they can see it). The weekly check runs under their account. To run checks yourself, paste the URL here.';
@@ -192,6 +196,8 @@
     ['redDrop', 'amberDrop', 'minWeeklySessions', 'minWeeklyImpressions', 'gapDays', 'gapMinDaily', 'ratioPct', 'ratioMinClicks'].forEach(function (k) { f[k] = $(k).value; });
     var url = $('url').value.trim();
     if (url) f.url = url;
+    var token = $('token').value.trim();
+    if (token) f.token = token;
     return f;
   }
 
@@ -199,7 +205,7 @@
     target = target || 'connMsg';
     setBusy(true);
     google.script.run.withSuccessHandler(function (state) {
-      render(state); $('url').value = '';
+      render(state); $('url').value = ''; $('token').value = '';
       if (!test) { show(target, 'Saved.'); setBusy(false); return; }
       show('connMsg', 'Saved. Testing the connection…', 'info');
       google.script.run.withSuccessHandler(function (m) { show('connMsg', m); setBusy(false); }).withFailureHandler(fail('connMsg')).thmTestConnection();
@@ -208,7 +214,7 @@
 
   function clearConn() {
     setBusy(true);
-    google.script.run.withSuccessHandler(function (s) { render(s); show('connMsg', 'Your saved URL was removed.'); setBusy(false); }).withFailureHandler(fail('connMsg')).thmClearConnection();
+    google.script.run.withSuccessHandler(function (s) { render(s); show('connMsg', 'Your saved URL and token were removed.'); setBusy(false); }).withFailureHandler(fail('connMsg')).thmClearConnection();
   }
 
   function testEmail() {
