@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<style>
+  :root { --ink:#202124; --muted:#5f6368; --line:#dadce0; --blue:#1a73e8; --red:#c5221f; --green:#188038; --bg:#f8f9fa; }
+  * { box-sizing: border-box; }
+  body { font: 13px/1.45 Arial, Helvetica, sans-serif; color: var(--ink); margin: 0; padding: 12px 14px 40px; }
+  h3 { font-size: 13px; margin: 18px 0 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+  label { display: block; margin: 8px 0 3px; font-weight: bold; font-size: 12px; }
+  label.row { font-weight: normal; display: flex; gap: 6px; align-items: flex-start; }
+  label.row input { margin-top: 2px; }
+  input[type=text], input[type=password], input[type=number], textarea, select {
+    width: 100%; padding: 6px 7px; border: 1px solid var(--line); border-radius: 4px; font: inherit; }
+  textarea { resize: vertical; }
+  button { font: inherit; padding: 6px 12px; border-radius: 4px; border: 1px solid var(--line); background: #fff; cursor: pointer; margin: 8px 6px 0 0; }
+  button.primary { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: bold; }
+  button:disabled { opacity: .55; cursor: default; }
+  .card { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .msg { margin-top: 8px; padding: 8px; border-radius: 4px; display: none; white-space: pre-wrap; }
+  .msg.ok { display: block; background: #e6f4ea; color: var(--green); }
+  .msg.err { display: block; background: #fce8e6; color: var(--red); }
+  .msg.info { display: block; background: #e8f0fe; color: #174ea6; }
+  .inline { display: flex; gap: 6px; }
+  .grid { display: grid; grid-template-columns: 1fr 74px; gap: 4px 8px; align-items: center; }
+  .grid input { padding: 4px 6px; }
+  details summary { cursor: pointer; font-weight: bold; margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
+  ul { padding-left: 18px; margin: 6px 0; }
+  li { margin-bottom: 4px; }
+  .pill { display:inline-block; padding:1px 7px; border-radius:10px; font-size:11px; font-weight:bold; }
+  .pill.on { background:#e6f4ea; color:var(--green); } .pill.off { background:#fce8e6; color:var(--red); }
+</style>
+</head>
+<body>
+
+<div id="status" class="card">Loading…</div>
+<button id="runBtn" class="primary" onclick="runNow()">Run check now</button>
+<label class="row" style="margin-top:6px"><input type="checkbox" id="runEmail"> Email the results of this run (the weekly run always emails)</label>
+<div id="runMsg" class="msg"></div>
+
+<h3>1. Data connection</h3>
+<label for="url">Connection URL</label>
+<input type="password" id="url" autocomplete="off" placeholder="Paste the full https://…/mcp?key=… URL">
+<div class="hint" id="connHint"></div>
+<label for="account">Reporting account</label>
+<input type="text" id="account" placeholder="reports@yourdomain.com">
+<div class="hint">The Google account (in the reporting dashboard) whose GA4 and Search Console access is checked. Only this account is ever queried.</div>
+<button onclick="save(true, 'connMsg')">Save &amp; test</button><button onclick="clearConn()">Remove my saved URL</button>
+<div id="connMsg" class="msg"></div>
+
+<h3>2. Email alerts</h3>
+<label class="row"><input type="checkbox" id="emailOn"> Send email alerts</label>
+<label for="recipients">Send to</label>
+<textarea id="recipients" rows="2" placeholder="name@company.com, other@company.com"></textarea>
+<label for="alertMode">When to email</label>
+<select id="alertMode">
+  <option value="all">Every run while anything is open</option>
+  <option value="new">Only when something new breaks</option>
+</select>
+<label class="row"><input type="checkbox" id="allClear"> Also email when everything is fine. Then a missing email means the check itself stopped.</label>
+<label for="fromName">Sender name</label>
+<input type="text" id="fromName">
+<div class="hint">Emails are sent from the Google account that runs the check.</div>
+<button onclick="save(false, 'mailMsg')">Save</button><button onclick="testEmail()">Send test email</button>
+<div id="mailMsg" class="msg"></div>
+
+<h3>3. Weekly schedule</h3>
+<div id="schedInfo" class="hint"></div>
+<div class="inline">
+  <select id="day">
+    <option value="MONDAY">Monday</option><option value="TUESDAY">Tuesday</option><option value="WEDNESDAY">Wednesday</option>
+    <option value="THURSDAY">Thursday</option><option value="FRIDAY">Friday</option><option value="SATURDAY">Saturday</option><option value="SUNDAY">Sunday</option>
+  </select>
+  <select id="hour"></select>
+</div>
+<button onclick="setSchedule()">Turn on / update</button><button onclick="removeSchedule()">Turn off</button>
+<div id="schedMsg" class="msg"></div>
+
+<details>
+  <summary>4. Rules (advanced)</summary>
+  <div class="grid" style="margin-top:8px">
+    <span>Red when sessions/impressions drop by at least (%)</span><input type="number" id="redDrop" min="10" max="95">
+    <span>Amber when they drop by at least (%)</span><input type="number" id="amberDrop" min="5" max="90">
+    <span>Ignore % drops below this many sessions/week</span><input type="number" id="minWeeklySessions" min="0">
+    <span>Ignore % drops below this many impressions/week</span><input type="number" id="minWeeklyImpressions" min="0">
+    <span>"Data gaps" = at least this many zero days in 7</span><input type="number" id="gapDays" min="1" max="7">
+    <span>…for properties with at least this many sessions/day</span><input type="number" id="gapMinDaily" min="0">
+    <span>Red if GA4 sessions are below this % of search clicks</span><input type="number" id="ratioPct" min="5" max="100">
+    <span>…when search clicks are at least</span><input type="number" id="ratioMinClicks" min="1">
+  </div>
+  <label class="row"><input type="checkbox" id="ratioCheck"> Compare GA4 sessions with Google search clicks</label>
+  <label class="row"><input type="checkbox" id="tagCheck"> Check the homepage code for the GA4 tag</label>
+  <label for="newMonitorDefault">New properties are monitored by default</label>
+  <select id="newMonitorDefault"><option value="Yes">Yes</option><option value="No">No</option></select>
+  <div class="hint">Property names containing "old", "test", "staging" or "do not use" start as Monitor? = No.</div>
+  <button onclick="save(false, 'rulesMsg')">Save rules</button>
+  <div id="rulesMsg" class="msg"></div>
+</details>
+
+<details>
+  <summary>How red / amber is decided</summary>
+  <ul class="hint" style="color:var(--ink)">
+    <li><b>🔴 No access / Access removed</b>: the reporting account can't read the property or no longer sees it (e.g. a client removed it, or Search Console verification was lost).</li>
+    <li><b>🔴 Not tracking</b>: 0 sessions in the last 7 days when there used to be data.</li>
+    <li><b>🔴 Tracking drop</b>: sessions fell by the red % vs normal. Tracking rarely drops to zero after a migration; usually a few pages keep the tag, so a big drop is the key signal.</li>
+    <li><b>🔴 Under-tracking</b>: GA4 shows fewer sessions than Google search clicks alone for the same site.</li>
+    <li><b>🟠 Traffic drop</b>: GA4 and search clicks fell together. Probably real traffic, not a tracking fault.</li>
+    <li><b>🟠 Data gaps / Dropping / Tag not found / Different tag</b>: worth a look, not urgent.</li>
+    <li>While a drop stays open, the script compares against the last healthy level ("Normal weekly level"), so a long outage never starts to look normal.</li>
+    <li>Set <b>Monitor? = No</b> on old, test or duplicate properties. They stay listed with their numbers but never alert.</li>
+  </ul>
+</details>
+
+<script>
+  var S = null;
+  var $ = function (id) { return document.getElementById(id); };
+  (function () {
+    var h = $('hour');
+    for (var i = 0; i < 24; i++) {
+      var o = document.createElement('option');
+      o.value = i; o.textContent = (i < 10 ? '0' : '') + i + ':00 – ' + (i < 9 ? '0' : '') + (i + 1) + ':00';
+      h.appendChild(o);
+    }
+    h.value = 8;
+  })();
+
+  function show(id, text, kind) { var el = $(id); el.className = 'msg ' + (kind || 'ok'); el.textContent = text; }
+  function hide(id) { $(id).className = 'msg'; }
+  function fail(id) { return function (e) { show(id, (e && e.message) || String(e), 'err'); setBusy(false); }; }
+  function setBusy(b) { Array.prototype.forEach.call(document.querySelectorAll('button'), function (x) { x.disabled = b; }); }
+  function fmtDate(ms) { if (!ms) return ''; var d = new Date(ms); return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }); }
+  function cap(s) { s = String(s || '').toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function render(state) {
+    S = state;
+    var c = state.config;
+    $('account').value = c.account;
+    $('emailOn').checked = !!c.emailOn;
+    $('recipients').value = c.recipients || '';
+    $('alertMode').value = c.alertMode;
+    $('allClear').checked = !!c.allClear;
+    $('fromName').value = c.fromName;
+    ['redDrop', 'amberDrop', 'minWeeklySessions', 'minWeeklyImpressions', 'gapDays', 'gapMinDaily', 'ratioPct', 'ratioMinClicks'].forEach(function (k) { $(k).value = c[k]; });
+    $('ratioCheck').checked = !!c.ratioCheck;
+    $('tagCheck').checked = !!c.tagCheck;
+    $('newMonitorDefault').value = c.newMonitorDefault;
+
+    var info = state.conn.info;
+    if (state.conn.savedForMe) {
+      $('connHint').textContent = 'Saved privately for you (' + state.conn.masked + '). Leave the box empty to keep it, or paste a new URL to replace it.';
+      $('url').placeholder = 'Saved: ' + state.conn.masked;
+    } else if (info && info.owner) {
+      $('connHint').textContent = 'Saved by ' + info.owner + ' (only they can see it). The weekly check runs under their account. To run checks yourself, paste the URL here.';
+    } else {
+      $('connHint').textContent = 'Stored in your private user settings, never in the sheet. Other editors can\'t see it.';
+    }
+
+    var sch = state.schedule;
+    if (sch) {
+      $('day').value = sch.day; $('hour').value = sch.hour;
+      var who = sch.mine ? 'you' : sch.owner;
+      var broken = sch.mine && sch.active === false;
+      $('schedInfo').innerHTML = (broken ? '<span class="pill off">MISSING</span> ' : '<span class="pill on">ON</span> ') +
+        'Every ' + cap(sch.day) + ', ' + sch.hour + ':00–' + (sch.hour + 1) + ':00 (' + (sch.tz || state.tz) + '), runs as ' + who + '.' +
+        (broken ? ' The trigger was deleted. Click "Turn on / update" to restore it.' : '');
+    } else {
+      $('schedInfo').innerHTML = '<span class="pill off">OFF</span> No weekly check yet. It will run as you, using your saved connection. Times are in ' + state.tz + '.';
+    }
+
+    var lr = state.lastRun, html = '';
+    if (state.running) html += '<b>⏳ A check is in progress.</b> It continues automatically in the background.<br>';
+    if (lr) {
+      var age = Math.floor((Date.now() - lr.finishedAt) / 864e5);
+      html += '<b>Last check:</b> ' + fmtDate(lr.finishedAt) + ' (' + lr.trigger + ')' + (age > 8 ? ' <span class="pill off">' + age + ' days ago</span>' : '') + '<br>' +
+        '🔴 ' + lr.red + ' &nbsp; 🟠 ' + lr.amber + ' &nbsp; 🟢 ' + lr.green + (lr.fresh ? ' &nbsp; (' + lr.fresh + ' new)' : '') +
+        '<br><span class="hint">' + lr.ga + ' GA4 properties · ' + lr.gsc + ' Search Console sites · ' + escapeHtml(lr.email || '') + '</span>';
+    } else {
+      html += '<b>Not run yet.</b> Save the connection (1), then click <i>Run check now</i>.';
+    }
+    $('status').innerHTML = html;
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function form() {
+    var f = {
+      account: $('account').value, emailOn: $('emailOn').checked, recipients: $('recipients').value, alertMode: $('alertMode').value,
+      allClear: $('allClear').checked, fromName: $('fromName').value, ratioCheck: $('ratioCheck').checked, tagCheck: $('tagCheck').checked,
+      newMonitorDefault: $('newMonitorDefault').value
+    };
+    ['redDrop', 'amberDrop', 'minWeeklySessions', 'minWeeklyImpressions', 'gapDays', 'gapMinDaily', 'ratioPct', 'ratioMinClicks'].forEach(function (k) { f[k] = $(k).value; });
+    var url = $('url').value.trim();
+    if (url) f.url = url;
+    return f;
+  }
+
+  function save(test, target) {
+    target = target || 'connMsg';
+    setBusy(true);
+    google.script.run.withSuccessHandler(function (state) {
+      render(state); $('url').value = '';
+      if (!test) { show(target, 'Saved.'); setBusy(false); return; }
+      show('connMsg', 'Saved. Testing the connection…', 'info');
+      google.script.run.withSuccessHandler(function (m) { show('connMsg', m); setBusy(false); }).withFailureHandler(fail('connMsg')).thmTestConnection();
+    }).withFailureHandler(fail(target)).thmSaveSettings(form());
+  }
+
+  function clearConn() {
+    setBusy(true);
+    google.script.run.withSuccessHandler(function (s) { render(s); show('connMsg', 'Your saved URL was removed.'); setBusy(false); }).withFailureHandler(fail('connMsg')).thmClearConnection();
+  }
+
+  function testEmail() {
+    setBusy(true);
+    google.script.run.withSuccessHandler(function () {
+      google.script.run.withSuccessHandler(function (m) { show('mailMsg', m); setBusy(false); }).withFailureHandler(fail('mailMsg')).thmSendTestEmail();
+    }).withFailureHandler(fail('mailMsg')).thmSaveSettings(form());
+  }
+
+  function setSchedule() {
+    setBusy(true);
+    google.script.run.withSuccessHandler(function (s) { render(s); show('schedMsg', 'Weekly check is on.'); setBusy(false); })
+      .withFailureHandler(fail('schedMsg')).thmSetSchedule($('day').value, $('hour').value);
+  }
+
+  function removeSchedule() {
+    setBusy(true);
+    google.script.run.withSuccessHandler(function (s) { render(s); show('schedMsg', 'Weekly check is off.', 'info'); setBusy(false); })
+      .withFailureHandler(fail('schedMsg')).thmRemoveSchedule();
+  }
+
+  function runNow() {
+    setBusy(true);
+    show('runMsg', 'Checking every GA4 property and Search Console site. This usually takes 2–5 minutes. You can keep working; results fill into the sheet as they arrive.', 'info');
+    google.script.run.withSuccessHandler(function (r) {
+      show('runMsg', r.message, r.ok ? 'ok' : 'err');
+      google.script.run.withSuccessHandler(function (s) { render(s); setBusy(false); }).thmGetState();
+    }).withFailureHandler(fail('runMsg')).thmRunNow($('runEmail').checked);
+  }
+
+  google.script.run.withSuccessHandler(render).withFailureHandler(function (e) { $('status').textContent = 'Could not load settings: ' + ((e && e.message) || e); }).thmGetState();
+</script>
+</body>
+</html>
