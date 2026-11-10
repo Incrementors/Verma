@@ -70,6 +70,7 @@ const CODES = {
   SITE_DOWN:      { sev: 'amber', label: '🟠 Website error' },
   CHECK_FAILED:   { sev: 'amber', label: '🟠 Check failed' },
   DUPLICATE:      { sev: 'green', label: '⚪ Alternate version' },
+  OFF:            { sev: 'grey',  label: '⚪ Not monitored' },
   OK:             { sev: 'green', label: '🟢 OK' }
 };
 const GSC_LABELS = { NO_DATA: '🔴 No impressions', DROP: '🔴 Impressions drop' };
@@ -92,7 +93,7 @@ const GA_COLS = [
   { k: 'tag', h: 'Tag on website', w: 210, n: 'Looks for this property\'s Measurement ID in the homepage code, directly or inside its Google Tag Manager container.' },
   { k: 'gsc', h: 'Search Console (same site)', w: 200, n: 'Google search clicks for the same website (7 days, ~3 days behind). Steady clicks + falling GA4 sessions = tracking fault, not a real traffic drop.' },
   { k: 'since', h: 'Problem since', w: 100, f: 'yyyy-mm-dd' },
-  { k: 'monitor', h: 'Monitor?', w: 80, n: 'Yes = include in alerts. No = keep listing it but never alert (old, test or duplicate properties).' },
+  { k: 'monitor', h: 'Monitor?', w: 80, n: 'Yes = check it every run. No = keep it listed (greyed out) but don\'t check it or alert. Tip: select rows → Tracking Monitor → Stop / Resume checking selected rows.' },
   { k: 'notes', h: 'Team notes', w: 220, wrap: true, n: 'Free text for the team. The script never overwrites this column.' },
   { k: 'account', h: 'GA4 account', w: 170 },
   { k: 'pid', h: 'Property ID', w: 145 },
@@ -116,7 +117,7 @@ const GSC_COLS = [
   { k: 'position', h: 'Avg position', w: 80, f: '0.0' },
   { k: 'access', h: 'Access level', w: 140, n: '"Unverified" means the account is listed but site ownership verification is gone, so no data can be read.' },
   { k: 'since', h: 'Problem since', w: 100, f: 'yyyy-mm-dd' },
-  { k: 'monitor', h: 'Monitor?', w: 80, n: 'Yes = include in alerts. No = keep listing it but never alert.' },
+  { k: 'monitor', h: 'Monitor?', w: 80, n: 'Yes = check it every run. No = keep it listed (greyed out) but don\'t check it or alert.' },
   { k: 'notes', h: 'Team notes', w: 220, wrap: true, n: 'Free text for the team. The script never overwrites this column.' },
   { k: 'normal', h: 'Normal weekly impressions', w: 110, f: '#,##0', n: 'Weekly impressions when this site was last healthy. Used during a drop so a long outage never becomes "normal".' },
   { k: 'checked', h: 'Last checked', w: 130, f: 'dd mmm yyyy hh:mm' },
@@ -134,6 +135,9 @@ function onOpen() {
     .addItem('Open settings', 'thmOpenSidebar')
     .addItem('Run check now', 'thmRunFromMenu')
     .addSeparator()
+    .addItem('Stop checking selected rows', 'thmStopSelected')
+    .addItem('Resume checking selected rows', 'thmResumeSelected')
+    .addSeparator()
     .addItem('Set up / repair tabs', 'thmSetupFromMenu')
     .addToUi();
   try { warnIfStale_(); } catch (e) { /* never block opening the sheet */ }
@@ -148,6 +152,40 @@ function thmRunFromMenu() {
   ss.toast('Checking every GA4 property and Search Console site. This can take a few minutes.', THM.MENU, 10);
   const r = runCheck_('Manual', { email: false });
   ss.toast(r.message, THM.MENU, 20);
+}
+
+function thmStopSelected() { setMonitorForSelection_('No'); }
+function thmResumeSelected() { setMonitorForSelection_('Yes'); }
+
+/** Sets Monitor? on every selected row of the GA4 or Search Console tab. */
+function setMonitorForSelection_(value) {
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getActiveSheet();
+  const cols = sh.getName() === THM.SHEETS.ga ? GA_COLS : sh.getName() === THM.SHEETS.gsc ? GSC_COLS : null;
+  if (!cols) { ss.toast('Select rows on the "' + THM.SHEETS.ga + '" or "' + THM.SHEETS.gsc + '" tab first.', THM.MENU, 8); return; }
+  const t = readTable_(sh, cols);
+  const picked = {};
+  (sh.getActiveRangeList() ? sh.getActiveRangeList().getRanges() : [sh.getActiveRange()]).forEach(rg => {
+    for (let row = rg.getRow(); row < rg.getRow() + rg.getNumRows(); row++) if (row >= THM.FIRST_ROW) picked[row - THM.FIRST_ROW] = true;
+  });
+  const rows = Object.keys(picked).map(Number).filter(i => t.rows[i] && (t.rows[i].pid || t.rows[i].site)).map(i => t.rows[i]);
+  if (!rows.length) { ss.toast('Select one or more property rows first.', THM.MENU, 8); return; }
+  rows.forEach(r => {
+    r.monitor = value;
+    if (value === 'No') { r.status = CODES.OFF.label; r.since = ''; r.rank = 4; }
+    else { r.status = '🔁 Checked next run'; r.rank = 3; }
+  });
+  writeTable_(t);
+  ss.toast((value === 'No' ? 'Stopped checking ' : 'Will check again: ') + rows.map(r => r.property || r.site).slice(0, 5).join(', ') +
+    (rows.length > 5 ? ' and ' + (rows.length - 5) + ' more' : '') + '.', THM.MENU, 10);
+}
+
+/** Rows set to Monitor? = No are not checked at all: no data requests, old numbers cleared, greyed out. */
+function skipRow_(r, source, state) {
+  const blank = source === 'ga'
+    ? { s7: '', base: '', change: '', zero: '', lastData: '', tag: '—', gsc: '—' }
+    : { clicks7: '', clicksChange: '', impr7: '', imprBase: '', imprChange: '', position: '' };
+  applyResult_(r, source, Object.assign(blank, { code: 'OFF', issue: 'Not checked because Monitor? is set to No. Set it back to Yes to check it again.' }), state);
 }
 
 function thmSetupFromMenu() {
@@ -497,7 +535,8 @@ function markMissing_(t, keyOf, seen, source, state, issue, what, blank) {
 function phaseGsc_(client, state, cfg, deadline) {
   const t = readTable_(sheet_(THM.SHEETS.gsc), GSC_COLS);
   const d = windows_(state.runDate);
-  const pending = t.rows.filter(r => r.site && checkedMs_(r) < state.startedAt);
+  t.rows.filter(r => r.site && !isMonitored_(r) && checkedMs_(r) < state.startedAt).forEach(r => skipRow_(r, 'gsc', state));
+  const pending = t.rows.filter(r => r.site && isMonitored_(r) && checkedMs_(r) < state.startedAt);
   for (let i = 0; i < pending.length; i += THM.BATCH_GSC) {
     if (i > 0 && Date.now() > deadline) { writeTable_(t); return false; } // always finish at least one batch per run
     const batch = pending.slice(i, i + THM.BATCH_GSC);
@@ -600,7 +639,7 @@ function markGscDuplicates_(t, state) {
 function phaseStreams_(client, state, cfg, deadline) {
   const t = readTable_(sheet_(THM.SHEETS.ga), GA_COLS);
   if (!state.streamQueue) {
-    state.streamQueue = t.rows.filter(r => r.pid && r.code !== 'REMOVED' && needsStreams_(r, state.runDate)).map(r => r.pid);
+    state.streamQueue = t.rows.filter(r => r.pid && r.code !== 'REMOVED' && isMonitored_(r) && needsStreams_(r, state.runDate)).map(r => r.pid);
     saveRunState_(state);
   }
   const byId = {};
@@ -651,7 +690,8 @@ function phaseGa_(client, state, cfg, deadline) {
     const h = siteBase_(firstUrl_(r.website));
     if (h) hostCounts[h] = (hostCounts[h] || 0) + 1;
   });
-  const pending = t.rows.filter(r => r.pid && checkedMs_(r) < state.startedAt);
+  t.rows.filter(r => r.pid && !isMonitored_(r) && checkedMs_(r) < state.startedAt).forEach(r => skipRow_(r, 'ga', state));
+  const pending = t.rows.filter(r => r.pid && isMonitored_(r) && checkedMs_(r) < state.startedAt);
   const cache = { html: {}, js: {} };
   for (let i = 0; i < pending.length; i += THM.BATCH_GA) {
     if (i > 0 && Date.now() > deadline) { writeTable_(t); return false; }

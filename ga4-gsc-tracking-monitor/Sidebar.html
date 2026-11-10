@@ -95,7 +95,7 @@
   <label class="row"><input type="checkbox" id="tagCheck"> Check the homepage code for the GA4 tag</label>
   <label for="newMonitorDefault">New properties are monitored by default</label>
   <select id="newMonitorDefault"><option value="Yes">Yes</option><option value="No">No</option></select>
-  <div class="hint">Property names containing "old", "test", "staging" or "do not use" start as Monitor? = No.</div>
+  <div class="hint">Property names containing "old", "test", "staging" or "do not use" start as Monitor? = No (not checked).</div>
   <button onclick="save(false, 'rulesMsg')">Save rules</button>
   <div id="rulesMsg" class="msg"></div>
 </details>
@@ -110,7 +110,7 @@
     <li><b>🟠 Traffic drop</b>: GA4 and search clicks fell together. Probably real traffic, not a tracking fault.</li>
     <li><b>🟠 Data gaps / Dropping / Tag not found / Different tag</b>: worth a look, not urgent.</li>
     <li>While a drop stays open, the script compares against the last healthy level ("Normal weekly level"), so a long outage never starts to look normal.</li>
-    <li>Set <b>Monitor? = No</b> on old, test or duplicate properties. They stay listed with their numbers but never alert.</li>
+    <li>To stop checking a website, set <b>Monitor? = No</b> on its row (or select rows → Tracking Monitor → <i>Stop checking selected rows</i>). It stays listed, greyed out, and is skipped completely. Do it on both tabs if the site has GA4 and Search Console rows. Don't delete rows: they come back on the next run.</li>
   </ul>
 </details>
 

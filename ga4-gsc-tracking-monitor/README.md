@@ -32,7 +32,7 @@ Why it never "gets used to" an outage: while a drop is open, the row is compared
    3. **Weekly schedule**: pick a day and hour, then click **Turn on**.
 7. Click **Run check now** once to fill the sheet.
 
-The first run lists everything. Set **Monitor? = No** on old, test or duplicate properties; they stay listed but never alert. Names containing "old", "test", "staging" or "do not use" start as No. To switch off a whole GA4 account (e.g. a partner's sub-account full of old sites), filter the *GA4 account* column and fill *Monitor?* with No.
+The first run lists everything. Set **Monitor? = No** on old, test or duplicate properties; they stay listed (greyed out) but are not checked at all and never alert. Names containing "old", "test", "staging" or "do not use" start as No. To switch off a whole GA4 account (e.g. a partner's sub-account full of old sites), filter the *GA4 account* column and fill *Monitor?* with No.
 
 ## The tabs
 
